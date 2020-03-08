@@ -1,4 +1,4 @@
-use actix_web::{web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{web, App, HttpServer, Responder};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -8,19 +8,45 @@ struct Test {
     autologin: String,
 }
 
-async fn index_post(item: web::Json<Test>) -> impl Responder {
-    println!("model: {:?}", &item);
-    HttpResponse::Ok().json(item.0)
+#[derive(Debug, Serialize, Deserialize)]
+struct Autologin {
+    autologin: String,
+}
+
+async fn index_post(item: web::Json<Autologin>) -> impl Responder {
+    println!("model: {:?}", &item); // show data received
+
+    let ret: Test = Test {
+        status_code: 200,
+        status_msg: String::from("okay"),
+        autologin: item.autologin.clone(), // allocate memory and copy
+    };
+    println!("model: {:?}", &ret);
+
+    web::Json(ret)
 }
 
 async fn index_get() -> impl Responder {
-    let item: Test = Test {
+    let mut list: Vec<Test> = Vec::new(); // list
+
+    list.push(Test {
         status_code: 200,
         status_msg: String::from("okay"),
-        autologin: String::from("https://intra.epitech.eu/..."),
-    };
-    println!("model: {:?}", &item);
-    HttpResponse::Ok().json(web::Json(&item).0)
+        autologin: String::from("tek"),
+    });
+    list.push(Test {
+        status_code: 404,
+        status_msg: String::from("not found"),
+        autologin: String::from("tek"),
+    });
+    list.push(Test {
+        status_code: 500,
+        status_msg: String::from("server error"),
+        autologin: String::from("tek"),
+    });
+
+    println!("model: {:?}", &list);
+    web::Json(list)
 }
 
 #[actix_rt::main]
