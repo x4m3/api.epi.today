@@ -1,5 +1,7 @@
-use actix_web::{web, App, HttpServer, Responder};
-use serde::{Deserialize, Serialize};
+use actix_web::{web, App, HttpServer, Responder}; // for web server
+use reqwest; // for http client
+use serde::{Deserialize, Serialize}; // for json serial / de-serial
+use std::time::Duration; // for timeout
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Test {
@@ -26,6 +28,29 @@ async fn index_post(item: web::Json<Autologin>) -> impl Responder {
     web::Json(ret)
 }
 
+static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
+
+async fn simple_json() -> Result<(), reqwest::Error> {
+    println!("test");
+
+    let request_url = format!("https://intra.epitech.eu/auth-5095dbdcd778bdf9bfee368f2729c84bd357c1ea/planning/4686/events?format=json&start=2020-03-11&end=2020-03-11");
+
+    let timeout = Duration::new(5, 0);
+    let client = reqwest::Client::builder()
+        .user_agent(APP_USER_AGENT)
+        .timeout(timeout)
+        .build()
+        .unwrap();
+    let res = client.get(&request_url).send().await?;
+
+    println!("http return code: {}", res.status());
+
+    let body = res.text().await?;
+    println!("Body:\n\n{}", body);
+
+    Ok(())
+}
+
 async fn index_get() -> impl Responder {
     let mut list: Vec<Test> = Vec::new(); // list
 
@@ -46,6 +71,9 @@ async fn index_get() -> impl Responder {
     });
 
     println!("model: {:?}", &list);
+
+    simple_json().await;
+
     web::Json(list)
 }
 
