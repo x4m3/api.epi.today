@@ -39,8 +39,7 @@ async fn simple_json() -> Result<(), reqwest::Error> {
     let client = reqwest::Client::builder()
         .user_agent(APP_USER_AGENT)
         .timeout(timeout)
-        .build()
-        .unwrap();
+        .build()?;
     let res = client.get(&request_url).send().await?;
 
     println!("http return code: {}", res.status());
