@@ -60,19 +60,17 @@ paths:
           description: "intra should be okay (you're never sure)"
         503:
           description: "unable to get information (intra is probably down)"
-  /user/info:
-    post:
+  /user:
+    get:
       tags:
         - "user"
       summary: "Student information"
-      consumes:
-        - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        required: true
-        schema:
-          $ref: "#/definitions/Autologin"
+        - in: "header"
+          name: "autologin"
+          required: true
+          type: "string"
+          pattern: '^([a-z0-9]{40})$'
       produces:
         - "application/json"
       responses:
@@ -84,13 +82,16 @@ paths:
         503:
           description: "unable to get information (intra is probably down)"
   /planning/day/{year}-{month}-{date}:
-    post:
+    get:
       tags:
         - "planning"
       summary: "Get planning of particular day"
-      consumes:
-        - "application/json"
       parameters:
+        - in: "header"
+          name: "autologin"
+          required: true
+          type: "string"
+          pattern: '^([a-z0-9]{40})$'
         - in: "path"
           name: "year"
           required: true
@@ -103,11 +104,6 @@ paths:
           name: "date"
           required: true
           type: "number"
-        - in: "body"
-          name: "body"
-          required: true
-          schema:
-            $ref: "#/definitions/Autologin"
       produces:
         - "application/json"
       responses:
@@ -119,20 +115,24 @@ paths:
               $ref: '#/definitions/PlanningDay'
         503:
           description: "unable to get information (intra is probably down)"
-  /planning/rdv/info:
-    post:
+  /planning/rdv:
+    get:
       tags:
         - "planning"
       summary: "Get planning of particular rendez-vous"
       consumes:
         - "application/json"
       parameters:
+      - in: "header"
+        name: "autologin"
+        required: true
+        type: "string"
+        pattern: '^([a-z0-9]{40})$'
       - in: "body"
         name: "body"
         required: true
         schema:
           allOf:
-            - $ref: "#/definitions/Autologin"
             - type: "object"
               properties:
                 year:
@@ -154,14 +154,19 @@ paths:
             $ref: '#/definitions/RdvInfo'
         503:
           description: "unable to get information (intra is probably down)"
-  /planning/event/register:
-    post:
+  /planning/event:
+    put:
       tags:
         - "planning"
       summary: "Register to event"
       consumes:
         - "application/json"
       parameters:
+      - in: "header"
+        name: "autologin"
+        required: true
+        type: "string"
+        pattern: '^([a-z0-9]{40})$'
       - in: "body"
         name: "body"
         required: true
@@ -174,14 +179,18 @@ paths:
           description: "Registration result"
         503:
           description: "unable to get reply (intra is probably down)"
-  /planning/event/unregister:
-    post:
+    delete:
       tags:
         - "planning"
       summary: "Unegister to event"
       consumes:
         - "application/json"
       parameters:
+      - in: "header"
+        name: "autologin"
+        required: true
+        type: "string"
+        pattern: '^([a-z0-9]{40})$'
       - in: "body"
         name: "body"
         required: true
@@ -194,14 +203,19 @@ paths:
           description: "Unregistration result"
         503:
           description: "unable to get reply (intra is probably down)"
-  /planning/event/enter_token:
-    post:
+  /planning/token:
+    put:
       tags:
         - "planning"
       summary: "Enter token for event"
       consumes:
         - "application/json"
       parameters:
+      - in: "header"
+        name: "autologin"
+        required: true
+        type: "string"
+        pattern: '^([a-z0-9]{40})$'
       - in: "body"
         name: "body"
         required: true
@@ -220,18 +234,16 @@ paths:
         503:
           description: "unable to get information (intra is probably down)"
   /custom_planning/list:
-    post:
+    get:
       tags:
         - "custom_planning"
       summary: "Get list of custom plannings"
-      consumes:
-        - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        required: true
-        schema:
-          $ref: "#/definitions/Autologin"
+        - in: "header"
+          name: "autologin"
+          required: true
+          type: "string"
+          pattern: '^([a-z0-9]{40})$'
       produces:
         - "application/json"
       responses:
@@ -244,13 +256,18 @@ paths:
         503:
           description: "unable to get information (intra is probably down)"
   /custom_planning/day/{year}-{month}-{date}:
-    post:
+    get:
       tags:
         - "custom_planning"
       summary: "Get list of events in custom planning of particular day"
       consumes:
         - "application/json"
       parameters:
+        - in: "header"
+          name: "autologin"
+          required: true
+          type: "string"
+          pattern: '^([a-z0-9]{40})$'
         - in: "path"
           name: "year"
           required: true
@@ -267,12 +284,10 @@ paths:
           name: "body"
           required: true
           schema:
-            allOf:
-              - $ref: "#/definitions/Autologin"
-              - type: "object"
-                properties:
-                  calendar_id:
-                    type: "number"
+              type: "object"
+              properties:
+                calendar_id:
+                  type: "number"
       produces:
         - "application/json"
       responses:
@@ -282,14 +297,19 @@ paths:
             $ref: '#/definitions/CustomPlanningDay'
         503:
           description: "unable to get information (intra is probably down)"
-  /custom_planning/event/register:
-    post:
+  /custom_planning/event:
+    put:
       tags:
         - "custom_planning"
       summary: "Register to custom planning event"
       consumes:
         - "application/json"
       parameters:
+      - in: "header"
+        name: "autologin"
+        required: true
+        type: "string"
+        pattern: '^([a-z0-9]{40})$'
       - in: "body"
         name: "body"
         required: true
@@ -302,14 +322,18 @@ paths:
           description: "Registration result"
         503:
           description: "unable to get reply (intra is probably down)"
-  /custom_planning/event/unregister:
-    post:
+    delete:
       tags:
         - "custom_planning"
       summary: "Unregister to custom planning event"
       consumes:
         - "application/json"
       parameters:
+      - in: "header"
+        name: "autologin"
+        required: true
+        type: "string"
+        pattern: '^([a-z0-9]{40})$'
       - in: "body"
         name: "body"
         required: true
@@ -324,12 +348,6 @@ paths:
           description: "unable to get reply (intra is probably down)"
 
 definitions:
-  Autologin:
-    type: "object"
-    properties:
-      autologin:
-        type: "string"
-        pattern: '^([a-z0-9]{40})$'
   User:
     type: "object"
     properties:
@@ -394,20 +412,17 @@ definitions:
         type: "boolean"
   PlanningEventParams:
     type: "object"
-    allOf:
-      - $ref: "#/definitions/Autologin"
-      - type: "object"
-        properties:
-          year:
-            type: "integer"
-          code_module:
-            type: "string"
-          code_instance:
-            type: "string"
-          code_acti:
-            type: "string"
-          code_event:
-            type: "string"
+    properties:
+      year:
+        type: "integer"
+      code_module:
+        type: "string"
+      code_instance:
+        type: "string"
+      code_acti:
+        type: "string"
+      code_event:
+        type: "string"
   CustomPlannings:
     type: "object"
     properties:
@@ -437,11 +452,8 @@ definitions:
             type: "boolean"
   CustomPlanningEventParams:
     type: "object"
-    allOf:
-      - $ref: "#/definitions/Autologin"
-      - type: "object"
-        properties:
-          calendar_id:
-            type: "number"
-          event_id:
-            type: "string"
+    properties:
+      calendar_id:
+        type: "number"
+      event_id:
+        type: "string"
