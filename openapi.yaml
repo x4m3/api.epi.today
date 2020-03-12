@@ -1,4 +1,5 @@
 swagger: "2.0"
+
 info:
   description: "api.epi.today"
   version: "1.0.0"
@@ -6,13 +7,17 @@ info:
   license:
     name: "MIT License"
     url: "https://spdx.org/licenses/MIT.html"
+
 host: "api.epi.today"
 basePath: "/v1"
+
 externalDocs:
   description: "Source code"
   url: "http://github.com/x4m3/api.epi.today"
+
 schemes:
 - "https"
+
 tags:
   - name: "health"
   - name: "user"
@@ -21,6 +26,7 @@ tags:
     description: "Main school planning"
   - name: "custom_planning"
     description: "Custom school plannings"
+
 paths:
   /:
     get:
@@ -85,11 +91,23 @@ paths:
       consumes:
         - "application/json"
       parameters:
-      - in: "body"
-        name: "body"
-        required: true
-        schema:
-          $ref: "#/definitions/Autologin"
+        - in: "path"
+          name: "year"
+          required: true
+          type: "number"
+        - in: "path"
+          name: "month"
+          required: true
+          type: "number"
+        - in: "path"
+          name: "date"
+          required: true
+          type: "number"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Autologin"
       produces:
         - "application/json"
       responses:
@@ -148,7 +166,7 @@ paths:
         name: "body"
         required: true
         schema:
-          $ref: '#/definitions/EventParams'
+          $ref: '#/definitions/PlanningEventParams'
       produces:
         - "application/json"
       responses:
@@ -168,7 +186,7 @@ paths:
         name: "body"
         required: true
         schema:
-          $ref: '#/definitions/EventParams'
+          $ref: '#/definitions/PlanningEventParams'
       produces:
         - "application/json"
       responses:
@@ -189,7 +207,7 @@ paths:
         required: true
         schema:
           allOf:
-            - $ref: "#/definitions/EventParams"
+            - $ref: "#/definitions/PlanningEventParams"
             - type: "object"
               properties:
                 token:
@@ -202,11 +220,108 @@ paths:
         503:
           description: "unable to get information (intra is probably down)"
   /custom_planning/list:
+    post:
+      tags:
+        - "custom_planning"
+      summary: "Get list of custom plannings"
+      consumes:
+        - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Autologin"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Custom plannings available"
+          schema:
+            type: "array"
+            items:
+              $ref: '#/definitions/CustomPlannings'
+        503:
+          description: "unable to get information (intra is probably down)"
   /custom_planning/day/{year}-{month}-{date}:
+    post:
+      tags:
+        - "custom_planning"
+      summary: "Get list of events in custom planning of particular day"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: "path"
+          name: "year"
+          required: true
+          type: "number"
+        - in: "path"
+          name: "month"
+          required: true
+          type: "number"
+        - in: "path"
+          name: "date"
+          required: true
+          type: "number"
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            allOf:
+              - $ref: "#/definitions/Autologin"
+              - type: "object"
+                properties:
+                  calendar_id:
+                    type: "number"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "List of events"
+          schema:
+            $ref: '#/definitions/CustomPlanningDay'
+        503:
+          description: "unable to get information (intra is probably down)"
   /custom_planning/event/register:
+    post:
+      tags:
+        - "custom_planning"
+      summary: "Register to custom planning event"
+      consumes:
+        - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: '#/definitions/CustomPlanningEventParams'
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Registration result"
+        503:
+          description: "unable to get reply (intra is probably down)"
   /custom_planning/event/unregister:
-
-
+    post:
+      tags:
+        - "custom_planning"
+      summary: "Unregister to custom planning event"
+      consumes:
+        - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: '#/definitions/CustomPlanningEventParams'
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Unregistration result"
+        503:
+          description: "unable to get reply (intra is probably down)"
 
 definitions:
   Autologin:
@@ -277,7 +392,7 @@ definitions:
         type: "string"
       registration_status:
         type: "boolean"
-  EventParams:
+  PlanningEventParams:
     type: "object"
     allOf:
       - $ref: "#/definitions/Autologin"
@@ -292,4 +407,41 @@ definitions:
           code_acti:
             type: "string"
           code_event:
+            type: "string"
+  CustomPlannings:
+    type: "object"
+    properties:
+      calendar_id:
+        type: "number"
+      calendar_title:
+        type: "string"
+  CustomPlanningDay:
+    type: "object"
+    allOf:
+      - $ref: "#/definitions/CustomPlannings"
+      - type: "object"
+        properties:
+          event_id:
+            type: "string"
+          title:
+            type: "string"
+          room:
+            type: "string"
+          time_start:
+            type: "string"
+          time_end:
+            type: "string"
+          teacher:
+            type: "string"
+          registration_status:
+            type: "boolean"
+  CustomPlanningEventParams:
+    type: "object"
+    allOf:
+      - $ref: "#/definitions/Autologin"
+      - type: "object"
+        properties:
+          calendar_id:
+            type: "number"
+          event_id:
             type: "string"
