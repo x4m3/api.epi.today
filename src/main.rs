@@ -1,7 +1,10 @@
-use actix_web::{web, App, HttpServer, Responder}; // for web server
+use actix_files as fs;
+use actix_web::{web, App, HttpResponse, HttpServer, Responder}; // for web server
 use reqwest; // for http client
 use serde::{Deserialize, Serialize}; // for json serial / de-serial
 use std::time::Duration; // for timeout
+
+static USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Test {
@@ -28,8 +31,6 @@ async fn index_post(item: web::Json<Autologin>) -> impl Responder {
     web::Json(ret)
 }
 
-static APP_USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
-
 async fn simple_json() -> Result<(), reqwest::Error> {
     println!("test");
 
@@ -37,7 +38,7 @@ async fn simple_json() -> Result<(), reqwest::Error> {
 
     let timeout = Duration::new(5, 0);
     let client = reqwest::Client::builder()
-        .user_agent(APP_USER_AGENT)
+        .user_agent(USER_AGENT)
         .timeout(timeout)
         .build()?;
     let res = client.get(&request_url).send().await?;
@@ -76,14 +77,27 @@ async fn index_get() -> impl Responder {
     web::Json(list)
 }
 
+async fn root_doc() -> HttpResponse {
+    HttpResponse::Ok()
+        .content_type("text/html; charset=utf-8")
+        .body(include_str!("../doc/doc.html"))
+}
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
-            .service(web::scope("/post").route("/test", web::post().to(index_post)))
+            .service(web::resource("/").route(web::get().to(root_doc)))
+            .service(fs::Files::new("/doc", "./doc").show_files_listing())
+            .service(
+                web::scope("/post")
+                    .route("/test", web::post().to(index_post))
+                    .route("/test2", web::get().to(root_doc)),
+            )
             .service(web::scope("/get").route("/test", web::get().to(index_get)))
     })
-    .bind("127.0.0.1:8003")?
+    .bind("127.0.0.1:8003")
+    .expect("could not start server on ip/port")
     .run()
     .await
 }
