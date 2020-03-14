@@ -1,4 +1,4 @@
-use actix_web::{web, App, HttpResponse, HttpServer, Responder}; // for web server
+use actix_web::{middleware, web, App, HttpResponse, HttpServer, Responder}; // for web server
 use dotenv::dotenv; // for .env file
 use reqwest; // for http client
 use serde::{Deserialize, Serialize}; // for json serial / de-serial
@@ -6,6 +6,9 @@ use std::{
     env,            // for system envs
     time::Duration, // for timeout
 };
+
+#[macro_use]
+extern crate log;
 
 static USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
 
@@ -95,12 +98,19 @@ async fn root_doc() -> HttpResponse {
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
+    // starting logger
+    env::set_var("RUST_LOG", "info");
+    env_logger::init();
+    info!("hello world");
+
+    // reading env file
     dotenv().ok().expect("Failed to read .env file");
     let host = env::var("HOST").expect("Host not set");
     let port = env::var("PORT").expect("Port not set");
 
-    HttpServer::new(|| {
+    let server = HttpServer::new(|| {
         App::new()
+            .wrap(middleware::Logger::new("[HTTP %s] [URL %U]"))
             .service(web::resource("/").route(web::get().to(root_doc)))
             .service(
                 web::scope("/post")
@@ -108,8 +118,12 @@ async fn main() -> std::io::Result<()> {
                     .route("/test2", web::get().to(root_doc)),
             )
             .service(web::scope("/get").route("/test", web::get().to(index_get)))
-    })
-    .bind(format!("{}:{}", host, port))?
-    .run()
-    .await
+    });
+
+    info!(
+        "starting server on http:://{}",
+        format!("{}:{}", host, port)
+    );
+
+    server.bind(format!("{}:{}", host, port))?.run().await
 }
