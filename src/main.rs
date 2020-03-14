@@ -1,4 +1,3 @@
-use actix_files as fs;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder}; // for web server
 use reqwest; // for http client
 use serde::{Deserialize, Serialize}; // for json serial / de-serial
@@ -77,9 +76,16 @@ async fn index_get() -> impl Responder {
     web::Json(list)
 }
 
+/// Displays API documentation
+///
+/// Documentation is rendered with redoc
+///
+/// Documentaion file is hosted on GitHub
 async fn root_doc() -> HttpResponse {
     HttpResponse::Ok()
+        // set as utf8 html file
         .content_type("text/html; charset=utf-8")
+        // and no need to have the html file at runtime
         .body(include_str!("../doc/doc.html"))
 }
 
@@ -88,7 +94,6 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
         App::new()
             .service(web::resource("/").route(web::get().to(root_doc)))
-            .service(fs::Files::new("/doc", "./doc").show_files_listing())
             .service(
                 web::scope("/post")
                     .route("/test", web::post().to(index_post))
