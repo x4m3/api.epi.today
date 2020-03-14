@@ -1,7 +1,11 @@
 use actix_web::{web, App, HttpResponse, HttpServer, Responder}; // for web server
+use dotenv::dotenv; // for .env file
 use reqwest; // for http client
 use serde::{Deserialize, Serialize}; // for json serial / de-serial
-use std::time::Duration; // for timeout
+use std::{
+    env,            // for system envs
+    time::Duration, // for timeout
+};
 
 static USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
 
@@ -91,6 +95,10 @@ async fn root_doc() -> HttpResponse {
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
+    dotenv().ok().expect("Failed to read .env file");
+    let host = env::var("HOST").expect("Host not set");
+    let port = env::var("PORT").expect("Port not set");
+
     HttpServer::new(|| {
         App::new()
             .service(web::resource("/").route(web::get().to(root_doc)))
@@ -101,8 +109,7 @@ async fn main() -> std::io::Result<()> {
             )
             .service(web::scope("/get").route("/test", web::get().to(index_get)))
     })
-    .bind("127.0.0.1:8003")
-    .expect("could not start server on ip/port")
+    .bind(format!("{}:{}", host, port))?
     .run()
     .await
 }
