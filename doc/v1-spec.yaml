@@ -3,7 +3,7 @@ swagger: "2.0"
 info:
   description: "api.epi.today"
   version: "1.0.0"
-  title: "epi.today"
+  title: "api.epi.today"
   license:
     name: "MIT License"
     url: "https://spdx.org/licenses/MIT.html"
@@ -20,6 +20,7 @@ schemes:
 
 tags:
   - name: "health"
+    description: "health of apis"
   - name: "user"
     description: "Student information"
   - name: "planning"
@@ -28,16 +29,6 @@ tags:
     description: "Custom school plannings"
 
 paths:
-  /:
-    get:
-      tags:
-        - "health"
-      summary: "Main entry point (only for html viewing)"
-      produces:
-        - "text/html"
-      responses:
-        200:
-          description: "List of api endpoints"
   /health/api:
     get:
       tags:
@@ -47,7 +38,7 @@ paths:
         - "application/json"
       responses:
         200:
-          description: "uptime"
+          description: "2epi2day4you"
   /health/intra:
     get:
       tags:
