@@ -1,4 +1,4 @@
-use actix_web::{middleware, web, App, HttpResponse, HttpServer, Responder}; // for web server
+use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder}; // for web server
 use dotenv::dotenv; // for .env file
 use reqwest; // for http client
 use serde::{Deserialize, Serialize}; // for json serial / de-serial
@@ -83,12 +83,8 @@ async fn index_get() -> impl Responder {
     web::Json(list)
 }
 
-/// Displays API documentation
-///
-/// Documentation is rendered with redoc
-///
-/// Documentaion file is hosted on GitHub
-async fn root_doc() -> HttpResponse {
+#[get("/")]
+async fn root_doc() -> impl Responder {
     HttpResponse::Ok()
         // set as utf8 html file
         .content_type("text/html; charset=utf-8")
@@ -96,14 +92,7 @@ async fn root_doc() -> HttpResponse {
         .body(include_str!("../doc/doc.html"))
 }
 
-fn v1_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(
-        web::scope("/post")
-            .route("/test", web::post().to(index_post))
-            .route("/test2", web::get().to(root_doc)),
-    );
-    cfg.service(web::scope("/get").route("/test", web::get().to(index_get)));
-}
+mod v1;
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
@@ -120,8 +109,8 @@ async fn main() -> std::io::Result<()> {
     let server = HttpServer::new(|| {
         App::new()
             .wrap(middleware::Logger::new("[HTTP %s] [URL %U]"))
-            .service(web::resource("/").route(web::get().to(root_doc)))
-            .service(web::scope("/v1").configure(v1_routes))
+            .service(root_doc)
+            .service(web::scope("/v1").configure(v1::init_routes))
     });
 
     info!(
