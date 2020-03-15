@@ -96,6 +96,15 @@ async fn root_doc() -> HttpResponse {
         .body(include_str!("../doc/doc.html"))
 }
 
+fn v1_routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(
+        web::scope("/post")
+            .route("/test", web::post().to(index_post))
+            .route("/test2", web::get().to(root_doc)),
+    );
+    cfg.service(web::scope("/get").route("/test", web::get().to(index_get)));
+}
+
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
     // starting logger
@@ -112,12 +121,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(middleware::Logger::new("[HTTP %s] [URL %U]"))
             .service(web::resource("/").route(web::get().to(root_doc)))
-            .service(
-                web::scope("/post")
-                    .route("/test", web::post().to(index_post))
-                    .route("/test2", web::get().to(root_doc)),
-            )
-            .service(web::scope("/get").route("/test", web::get().to(index_get)))
+            .service(web::scope("/v1").configure(v1_routes))
     });
 
     info!(
