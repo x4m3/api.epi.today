@@ -3,7 +3,7 @@ use std::time::Duration;
 
 pub async fn make_get_request(
     client: &reqwest::Client,
-    url: &String,
+    url: &str,
 ) -> Result<reqwest::Response, reqwest::Error> {
     Ok(client.get(url).send().await?)
 }
