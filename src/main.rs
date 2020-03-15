@@ -10,8 +10,6 @@ use std::{
 #[macro_use]
 extern crate log;
 
-static USER_AGENT: &str = concat!(env!("CARGO_PKG_NAME"), "/", env!("CARGO_PKG_VERSION"),);
-
 #[derive(Debug, Serialize, Deserialize)]
 struct Test {
     status_code: u16,
@@ -42,11 +40,7 @@ async fn simple_json() -> Result<(), reqwest::Error> {
 
     let request_url = format!("https://intra.epitech.eu/auth-5095dbdcd778bdf9bfee368f2729c84bd357c1ea/planning/4686/events?format=json&start=2020-03-11&end=2020-03-11");
 
-    let timeout = Duration::new(5, 0);
-    let client = reqwest::Client::builder()
-        .user_agent(USER_AGENT)
-        .timeout(timeout)
-        .build()?;
+    let client = intra_client::create_client()?;
     let res = client.get(&request_url).send().await?;
 
     println!("http return code: {}", res.status());
@@ -54,9 +48,11 @@ async fn simple_json() -> Result<(), reqwest::Error> {
     let body = res.text().await?;
     println!("Body:\n\n{}", body);
 
+    println!("simplejson done");
     Ok(())
 }
 
+#[get("/test")]
 async fn index_get() -> impl Responder {
     let mut list: Vec<Test> = Vec::new(); // list
 
@@ -79,6 +75,7 @@ async fn index_get() -> impl Responder {
     println!("model: {:?}", &list);
 
     simple_json().await;
+    println!("request done");
 
     web::Json(list)
 }
@@ -92,6 +89,7 @@ async fn root_doc() -> impl Responder {
         .body(include_str!("../doc/doc.html"))
 }
 
+mod intra_client;
 mod v1;
 
 #[actix_rt::main]
@@ -111,6 +109,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(middleware::Logger::new("[HTTP %s] [URL %U]"))
             .service(root_doc)
             .service(web::scope("/v1").configure(v1::init_routes))
+            .service(index_get)
     });
 
     info!(
