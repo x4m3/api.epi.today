@@ -1,8 +1,7 @@
 use actix_web::{get, http::StatusCode, web, Responder};
 use serde::Serialize;
 
-#[path = "../intra_client.rs"]
-mod intra_client;
+use crate::intra_client;
 
 #[derive(Serialize)]
 struct ReplyInfo {
