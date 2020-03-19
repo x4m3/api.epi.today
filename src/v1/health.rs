@@ -1,4 +1,4 @@
-use actix_web::{get, http::StatusCode, web, Responder};
+use actix_web::{get, http::StatusCode, web, HttpResponse, Responder};
 use serde::Serialize;
 
 use crate::intra_client;
@@ -22,8 +22,9 @@ async fn intra() -> impl Responder {
     let url = format!("https://intra.epitech.eu/?format=json");
     let res = match intra_client::make_get_request(&client, &url).await {
         Ok(res) => res,
+        // if request fails, it may be an error from our end or something else
         Err(_) => {
-            return web::Json(ReplyInfo {
+            return HttpResponse::ServiceUnavailable().json(ReplyInfo {
                 msg: String::from("error"),
             })
         }
@@ -31,14 +32,17 @@ async fn intra() -> impl Responder {
 
     match res.status() {
         StatusCode::FORBIDDEN => {
-            return web::Json(ReplyInfo {
+            // if intra return 403, that means that intra works
+            // (403 because we don't have permission to get data)
+            return HttpResponse::Ok().json(ReplyInfo {
                 msg: String::from("okay"),
-            })
+            });
         }
         _ => {
-            return web::Json(ReplyInfo {
+            // otherwise, the intra is (probably down)
+            return HttpResponse::InternalServerError().json(ReplyInfo {
                 msg: String::from("down"),
-            })
+            });
         }
     }
 }
