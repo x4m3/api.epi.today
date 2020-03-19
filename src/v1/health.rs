@@ -1,7 +1,6 @@
+use crate::intra_client;
 use actix_web::{get, http::StatusCode, web, HttpResponse, Responder};
 use serde::Serialize;
-
-use crate::intra_client;
 
 #[derive(Serialize)]
 struct ReplyInfo {
@@ -39,7 +38,7 @@ async fn intra() -> impl Responder {
             });
         }
         _ => {
-            // otherwise, the intra is (probably down)
+            // otherwise, the intra is (probably) down
             return HttpResponse::InternalServerError().json(ReplyInfo {
                 msg: String::from("down"),
             });

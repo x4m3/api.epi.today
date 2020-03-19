@@ -70,8 +70,10 @@ paths:
           schema:
             items:
               $ref: "#/definitions/User"
+        500:
+          description: "could not get requested information"
         503:
-          description: "unable to get information (intra is probably down)"
+          description: "unable make request to intra"
   /planning/day/{year}-{month}-{date}:
     get:
       tags:
