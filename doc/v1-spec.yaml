@@ -51,7 +51,7 @@ paths:
           description: "intra should be okay (you're never sure)"
         503:
           description: "unable to get information (intra is probably down)"
-  /user:
+  /user/info:
     get:
       tags:
         - "user"
