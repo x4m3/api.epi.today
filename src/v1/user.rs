@@ -60,14 +60,45 @@ async fn info(req: HttpRequest) -> impl Responder {
     let raw_json: Value = serde_json::from_str(&raw_body).unwrap();
 
     let user = UserInfo {
-        name: String::from(raw_json["title"].as_str().unwrap()),
-        email: String::from(raw_json["internal_email"].as_str().unwrap()),
-        city: String::from(raw_json["groups"][0]["title"].as_str().unwrap()),
-        year: raw_json["studentyear"].as_u64().unwrap(),
-        semester: raw_json["semester"].as_u64().unwrap(),
-        credits: raw_json["credits"].as_u64().unwrap(),
-        gpa: String::from(raw_json["gpa"][0]["gpa"].as_str().unwrap()),
-        log: raw_json["nsstat"]["active"].as_f64().unwrap(),
+        name: match raw_json["title"].as_str() {
+            Some(name) => String::from(name),
+            None => String::from("Ano Nymous"),
+        },
+
+        email: match raw_json["login"].as_str() {
+            Some(email) => String::from(email),
+            None => String::from("ano.nymous@epitech.eu"),
+        },
+
+        city: match raw_json["groups"][0]["title"].as_str() {
+            Some(city) => String::from(city),
+            None => String::from("Homeless"),
+        },
+
+        year: match raw_json["studentyear"].as_u64() {
+            Some(year) => year,
+            None => 42,
+        },
+
+        semester: match raw_json["semester"].as_u64() {
+            Some(semester) => semester,
+            None => 42,
+        },
+
+        credits: match raw_json["credits"].as_u64() {
+            Some(credits) => credits,
+            None => 0,
+        },
+
+        gpa: match raw_json["gpa"][0]["gpa"].as_str() {
+            Some(gpa) => String::from(gpa),
+            None => String::from("0.00"),
+        },
+
+        log: match raw_json["nsstat"]["active"].as_f64() {
+            Some(log) => log,
+            None => 0.00,
+        },
     };
 
     HttpResponse::Ok().json(user)
