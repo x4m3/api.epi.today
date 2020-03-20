@@ -1,7 +1,7 @@
 use crate::intra_autologin;
 use crate::intra_client;
 use actix_web::{get, http::StatusCode, web, HttpRequest, HttpResponse, Responder};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::Value;
 
 #[derive(Serialize)]
@@ -9,7 +9,7 @@ struct ReplyInfo {
     msg: String,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize)]
 struct UserInfo {
     name: String,
     email: String,
