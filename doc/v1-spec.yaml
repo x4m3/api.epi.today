@@ -70,6 +70,8 @@ paths:
           schema:
             items:
               $ref: "#/definitions/User"
+        400:
+          description: "bad or no autologin provided"
         500:
           description: "could not get requested information"
         503:
