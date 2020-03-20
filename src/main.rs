@@ -89,6 +89,7 @@ async fn root_doc() -> impl Responder {
         .body(include_str!("../doc/doc.html"))
 }
 
+mod intra_autologin;
 mod intra_client;
 mod v1;
 

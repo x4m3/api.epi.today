@@ -22,14 +22,23 @@ struct UserInfo {
 
 #[get("/info")]
 async fn info(req: HttpRequest) -> impl Responder {
-    // TODO: get autologin from http header
-    // make sure it's ok with regex otherwise return bad user input
+    let autologin = match intra_autologin::get_from_header(&req) {
+        Some(autologin) => autologin,
+        _ => {
+            return HttpResponse::BadRequest().json(ReplyInfo {
+                msg: String::from("no autologin provided"),
+            })
+        }
+    };
 
-    let test_autologin = intra_autologin::get_from_header(&req).await;
+    if intra_autologin::check(&autologin) == false {
+        return HttpResponse::BadRequest().json(ReplyInfo {
+            msg: String::from("bad autologin provided"),
+        });
+    }
 
     let client = intra_client::create_client().unwrap();
 
-    let autologin = format!("5095dbdcd778bdf9bfee368f2729c84bd357c1ea");
     let path = format!("/user/?format=json");
     let res = match intra_client::get_path_auth(&client, &autologin, &path).await {
         Ok(res) => res,

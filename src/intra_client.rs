@@ -70,6 +70,5 @@ pub async fn get_path_auth(
     path: &str,
 ) -> Result<reqwest::Response, reqwest::Error> {
     let final_request = format!("/auth-{}{}", autologin, path);
-    println!("final request : {}", final_request);
     Ok(get_path(&client, &final_request).await?)
 }
