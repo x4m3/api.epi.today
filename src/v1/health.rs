@@ -16,7 +16,14 @@ async fn api() -> impl Responder {
 
 #[get("/intra")]
 async fn intra() -> impl Responder {
-    let client = intra_client::create_client().unwrap();
+    let client = match intra_client::create_client() {
+        Ok(client) => client,
+        Err(_) => {
+            return HttpResponse::InternalServerError().json(ReplyInfo {
+                msg: String::from("could not create intra client"),
+            })
+        }
+    };
 
     let path = format!("/?format=json");
     let res = match intra_client::get_path(&client, &path).await {

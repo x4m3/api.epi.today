@@ -49,6 +49,8 @@ paths:
       responses:
         200:
           description: "intra should be okay (you're never sure)"
+        500:
+          description: "could not make request"
         503:
           description: "unable to get information (intra is probably down)"
   /user/info:

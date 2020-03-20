@@ -38,7 +38,14 @@ async fn info(req: HttpRequest) -> impl Responder {
         });
     }
 
-    let client = intra_client::create_client().unwrap();
+    let client = match intra_client::create_client() {
+        Ok(client) => client,
+        Err(_) => {
+            return HttpResponse::InternalServerError().json(ReplyInfo {
+                msg: String::from("could not create intra client"),
+            })
+        }
+    };
 
     let path = format!("/user/?format=json");
     let res = match intra_client::get_path_auth(&client, &autologin, &path).await {
@@ -56,8 +63,23 @@ async fn info(req: HttpRequest) -> impl Responder {
         });
     }
 
-    let raw_body = res.text().await.unwrap();
-    let raw_json: Value = serde_json::from_str(&raw_body).unwrap();
+    let raw_body = match res.text().await {
+        Ok(raw_body) => raw_body,
+        Err(_) => {
+            return HttpResponse::InternalServerError().json(ReplyInfo {
+                msg: String::from("could not get intra response"),
+            })
+        }
+    };
+
+    let raw_json: Value = match serde_json::from_str(&raw_body) {
+        Ok(raw_json) => raw_json,
+        Err(_) => {
+            return HttpResponse::InternalServerError().json(ReplyInfo {
+                msg: String::from("failed to parse intra response in json"),
+            })
+        }
+    };
 
     let user = UserInfo {
         name: match raw_json["title"].as_str() {
