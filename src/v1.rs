@@ -1,5 +1,9 @@
 use actix_web::web;
 
+// Data types
+mod data;
+
+// Routes
 mod custom_planning;
 mod health;
 mod planning;

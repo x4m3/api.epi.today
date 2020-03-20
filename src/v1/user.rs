@@ -1,32 +1,15 @@
 use crate::intra_autologin;
 use crate::intra_client;
+use crate::v1::data;
 use actix_web::{get, http::StatusCode, web, HttpRequest, HttpResponse, Responder};
-use serde::Serialize;
 use serde_json::Value;
-
-#[derive(Serialize)]
-struct ReplyInfo {
-    msg: String,
-}
-
-#[derive(Serialize)]
-struct UserInfo {
-    name: String,
-    email: String,
-    city: String,
-    year: u64,
-    semester: u64,
-    credits: u64,
-    gpa: String,
-    log: f64,
-}
 
 #[get("/info")]
 async fn info(req: HttpRequest) -> impl Responder {
     let autologin = match intra_autologin::get_from_header(&req) {
         Some(autologin) => autologin,
         _ => {
-            return HttpResponse::BadRequest().json(ReplyInfo {
+            return HttpResponse::BadRequest().json(data::Default {
                 msg: String::from("no autologin provided"),
             })
         }
@@ -35,13 +18,13 @@ async fn info(req: HttpRequest) -> impl Responder {
     match intra_autologin::check(&autologin) {
         Some(result) => {
             if result == false {
-                return HttpResponse::BadRequest().json(ReplyInfo {
+                return HttpResponse::BadRequest().json(data::Default {
                     msg: String::from("bad autologin provided"),
                 });
             }
         }
         None => {
-            return HttpResponse::InternalServerError().json(ReplyInfo {
+            return HttpResponse::InternalServerError().json(data::Default {
                 msg: String::from("failed to check autologin"),
             })
         }
@@ -50,7 +33,7 @@ async fn info(req: HttpRequest) -> impl Responder {
     let client = match intra_client::create_client() {
         Ok(client) => client,
         Err(_) => {
-            return HttpResponse::InternalServerError().json(ReplyInfo {
+            return HttpResponse::InternalServerError().json(data::Default {
                 msg: String::from("could not create intra client"),
             })
         }
@@ -60,14 +43,14 @@ async fn info(req: HttpRequest) -> impl Responder {
     let res = match intra_client::get_path_auth(&client, &autologin, &path).await {
         Ok(res) => res,
         Err(_) => {
-            return HttpResponse::ServiceUnavailable().json(ReplyInfo {
+            return HttpResponse::ServiceUnavailable().json(data::Default {
                 msg: String::from("error"),
             })
         }
     };
 
     if res.status() != StatusCode::OK {
-        return HttpResponse::InternalServerError().json(ReplyInfo {
+        return HttpResponse::InternalServerError().json(data::Default {
             msg: String::from("could not get user information"),
         });
     }
@@ -75,7 +58,7 @@ async fn info(req: HttpRequest) -> impl Responder {
     let raw_body = match res.text().await {
         Ok(raw_body) => raw_body,
         Err(_) => {
-            return HttpResponse::InternalServerError().json(ReplyInfo {
+            return HttpResponse::InternalServerError().json(data::Default {
                 msg: String::from("could not get intra response"),
             })
         }
@@ -84,13 +67,13 @@ async fn info(req: HttpRequest) -> impl Responder {
     let raw_json: Value = match serde_json::from_str(&raw_body) {
         Ok(raw_json) => raw_json,
         Err(_) => {
-            return HttpResponse::InternalServerError().json(ReplyInfo {
+            return HttpResponse::InternalServerError().json(data::Default {
                 msg: String::from("failed to parse intra response in json"),
             })
         }
     };
 
-    let user = UserInfo {
+    let user = data::User {
         name: match raw_json["title"].as_str() {
             Some(name) => String::from(name),
             None => String::from("Ano Nymous"),

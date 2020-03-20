@@ -1,15 +1,10 @@
 use crate::intra_client;
+use crate::v1::data;
 use actix_web::{get, http::StatusCode, web, HttpResponse, Responder};
-use serde::Serialize;
-
-#[derive(Serialize)]
-struct ReplyInfo {
-    msg: String,
-}
 
 #[get("/api")]
 async fn api() -> impl Responder {
-    web::Json(ReplyInfo {
+    web::Json(data::Default {
         msg: String::from("2epi2day4you"),
     })
 }
@@ -19,7 +14,7 @@ async fn intra() -> impl Responder {
     let client = match intra_client::create_client() {
         Ok(client) => client,
         Err(_) => {
-            return HttpResponse::InternalServerError().json(ReplyInfo {
+            return HttpResponse::InternalServerError().json(data::Default {
                 msg: String::from("could not create intra client"),
             })
         }
@@ -30,7 +25,7 @@ async fn intra() -> impl Responder {
         Ok(res) => res,
         // if request fails, it may be an error from our end or something else
         Err(_) => {
-            return HttpResponse::ServiceUnavailable().json(ReplyInfo {
+            return HttpResponse::ServiceUnavailable().json(data::Default {
                 msg: String::from("error"),
             })
         }
@@ -40,13 +35,13 @@ async fn intra() -> impl Responder {
         StatusCode::FORBIDDEN => {
             // if intra return 403, that means that intra works
             // (403 because we don't have permission to get data)
-            return HttpResponse::Ok().json(ReplyInfo {
+            return HttpResponse::Ok().json(data::Default {
                 msg: String::from("okay"),
             });
         }
         _ => {
             // otherwise, the intra is (probably) down
-            return HttpResponse::InternalServerError().json(ReplyInfo {
+            return HttpResponse::InternalServerError().json(data::Default {
                 msg: String::from("down"),
             });
         }
