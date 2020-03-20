@@ -1,4 +1,4 @@
-use crate::intra_client;
+use crate::intra::client;
 use crate::v1::data;
 use actix_web::{get, http::StatusCode, web, HttpResponse, Responder};
 
@@ -11,7 +11,7 @@ async fn api() -> impl Responder {
 
 #[get("/intra")]
 async fn intra() -> impl Responder {
-    let client = match intra_client::create_client() {
+    let client = match client::create_client() {
         Ok(client) => client,
         Err(_) => {
             return HttpResponse::InternalServerError().json(data::Default {
@@ -21,7 +21,7 @@ async fn intra() -> impl Responder {
     };
 
     let path = format!("/?format=json");
-    let res = match intra_client::get_path(&client, &path).await {
+    let res = match client::get_path(&client, &path).await {
         Ok(res) => res,
         // if request fails, it may be an error from our end or something else
         Err(_) => {

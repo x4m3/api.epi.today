@@ -5,8 +5,7 @@ use std::env;
 #[macro_use]
 extern crate log;
 
-mod intra_autologin;
-mod intra_client;
+mod intra;
 mod v1;
 
 #[get("/")]

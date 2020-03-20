@@ -1,12 +1,11 @@
-use crate::intra_autologin;
-use crate::intra_client;
+use crate::intra::{autologin, client};
 use crate::v1::data;
 use actix_web::{get, http::StatusCode, web, HttpRequest, HttpResponse, Responder};
 use serde_json::Value;
 
 #[get("/info")]
 async fn info(req: HttpRequest) -> impl Responder {
-    let autologin = match intra_autologin::get_from_header(&req) {
+    let autologin = match autologin::get_from_header(&req) {
         Some(autologin) => autologin,
         _ => {
             return HttpResponse::BadRequest().json(data::Default {
@@ -15,7 +14,7 @@ async fn info(req: HttpRequest) -> impl Responder {
         }
     };
 
-    match intra_autologin::check(&autologin) {
+    match autologin::check(&autologin) {
         Some(result) => {
             if result == false {
                 return HttpResponse::BadRequest().json(data::Default {
@@ -30,7 +29,7 @@ async fn info(req: HttpRequest) -> impl Responder {
         }
     }
 
-    let client = match intra_client::create_client() {
+    let client = match client::create_client() {
         Ok(client) => client,
         Err(_) => {
             return HttpResponse::InternalServerError().json(data::Default {
@@ -40,7 +39,7 @@ async fn info(req: HttpRequest) -> impl Responder {
     };
 
     let path = format!("/user/?format=json");
-    let res = match intra_client::get_path_auth(&client, &autologin, &path).await {
+    let res = match client::get_path_auth(&client, &autologin, &path).await {
         Ok(res) => res,
         Err(_) => {
             return HttpResponse::ServiceUnavailable().json(data::Default {

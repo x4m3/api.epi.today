@@ -1,4 +1,4 @@
-use crate::intra_client;
+use crate::intra::{autologin, client};
 use actix_web::{get, http::StatusCode, web, HttpResponse, Responder};
 use serde::Serialize;
 
