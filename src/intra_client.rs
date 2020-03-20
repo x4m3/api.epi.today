@@ -1,28 +1,6 @@
 use reqwest;
 use std::time::Duration;
 
-/// Returns the result of a request to the intra
-///
-/// # Arguments
-///
-/// * `client` - A reqwest client already built
-/// * `url` - A string containing the url of the request to execute
-///
-/// # Example
-///
-/// ```
-/// use crate::intra_client;
-/// let request_url = format!("https://intra.epitech.eu/?format=json");
-/// let client = intra_client::create_client()?;
-/// let res = client.get(&request_url).send().await?;
-/// ```
-pub async fn make_get_request(
-    client: &reqwest::Client,
-    url: &str,
-) -> Result<reqwest::Response, reqwest::Error> {
-    Ok(client.get(url).send().await?)
-}
-
 /// Returns a client ready to be used for making requests to the intra
 ///
 /// # Example
@@ -44,4 +22,54 @@ pub fn create_client() -> Result<reqwest::Client, reqwest::Error> {
         .build()?;
 
     Ok(client)
+}
+
+/// Returns the result of a **get** request to the intra
+///
+/// # Arguments
+///
+/// * `client` - A reqwest client already built
+/// * `path` - A string containing the path of the intra to request
+///
+/// # Example
+///
+/// ```
+/// use crate::intra_client;
+/// let path = format!("/?format=json");
+/// let client = intra_client::create_client()?;
+/// let res = intra_client::get_path(&client, &path).await?;
+/// ```
+pub async fn get_path(
+    client: &reqwest::Client,
+    path: &str,
+) -> Result<reqwest::Response, reqwest::Error> {
+    let url = format!("https://intra.epitech.eu{}", path);
+    Ok(client.get(&url).send().await?)
+}
+
+/// Returns the result of a **get** request to the intra with a autologin and path
+///
+/// # Arguments
+///
+/// * `client` - A reqwest client already built
+/// * `autologin` - A autologin information to make request as user
+/// * `path` - A string containing the path of the intra to request
+///
+/// # Example
+///
+/// ```
+/// use crate::intra_client;
+/// let autologin = format!("insert_autologin_here");
+/// let path = format!("/user/?format=json");
+/// let client = intra_client::create_client()?;
+/// let res = intra_client::get_path_auth(&client, &autologin, &path).await?;
+/// ```
+pub async fn get_path_auth(
+    client: &reqwest::Client,
+    autologin: &str,
+    path: &str,
+) -> Result<reqwest::Response, reqwest::Error> {
+    let final_request = format!("/auth-{}{}", autologin, path);
+    println!("final request : {}", final_request);
+    Ok(get_path(&client, &final_request).await?)
 }

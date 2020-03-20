@@ -18,8 +18,8 @@ async fn api() -> impl Responder {
 async fn intra() -> impl Responder {
     let client = intra_client::create_client().unwrap();
 
-    let url = format!("https://intra.epitech.eu/?format=json");
-    let res = match intra_client::make_get_request(&client, &url).await {
+    let path = format!("/?format=json");
+    let res = match intra_client::get_path(&client, &path).await {
         Ok(res) => res,
         // if request fails, it may be an error from our end or something else
         Err(_) => {
