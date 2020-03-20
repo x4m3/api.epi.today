@@ -32,10 +32,19 @@ async fn info(req: HttpRequest) -> impl Responder {
         }
     };
 
-    if intra_autologin::check(&autologin) == false {
-        return HttpResponse::BadRequest().json(ReplyInfo {
-            msg: String::from("bad autologin provided"),
-        });
+    match intra_autologin::check(&autologin) {
+        Some(result) => {
+            if result == false {
+                return HttpResponse::BadRequest().json(ReplyInfo {
+                    msg: String::from("bad autologin provided"),
+                });
+            }
+        }
+        None => {
+            return HttpResponse::InternalServerError().json(ReplyInfo {
+                msg: String::from("failed to check autologin"),
+            })
+        }
     }
 
     let client = match intra_client::create_client() {

@@ -25,7 +25,10 @@ pub fn get_from_header<'a>(req: &'a HttpRequest) -> Option<&'a str> {
 /// let res_ko = intra_autologin::autologin(&bad_autologin);
 /// assert_eq!(res_ko, false);
 /// ```
-pub fn check(autologin: &str) -> bool {
-    let re = Regex::new("^([a-z0-9]{40})$").unwrap();
-    re.is_match(autologin)
+pub fn check(autologin: &str) -> Option<bool> {
+    let re = match Regex::new("^([a-z0-9]{40})$") {
+        Ok(re) => re,
+        Err(_) => return None,
+    };
+    Some(re.is_match(autologin))
 }
