@@ -19,7 +19,7 @@ async fn intra() -> impl Responder {
         // if request fails, it may be an error from our end or something else
         Err(_) => {
             return HttpResponse::ServiceUnavailable().json(data::Default {
-                msg: String::from("error"),
+                msg: String::from("client error"),
             })
         }
     };

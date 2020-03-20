@@ -43,7 +43,7 @@ pub async fn info(req: HttpRequest) -> impl Responder {
         Ok(res) => res,
         Err(_) => {
             return HttpResponse::ServiceUnavailable().json(data::Default {
-                msg: String::from("error"),
+                msg: String::from("client error"),
             })
         }
     };
