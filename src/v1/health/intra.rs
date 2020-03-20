@@ -1,13 +1,6 @@
 use crate::intra::client;
 use crate::v1::data;
-use actix_web::{get, http::StatusCode, web, HttpResponse, Responder};
-
-#[get("/api")]
-async fn api() -> impl Responder {
-    web::Json(data::Default {
-        msg: String::from("2epi2day4you"),
-    })
-}
+use actix_web::{get, http::StatusCode, HttpResponse, Responder};
 
 #[get("/intra")]
 async fn intra() -> impl Responder {
@@ -46,9 +39,4 @@ async fn intra() -> impl Responder {
             });
         }
     }
-}
-
-pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(api);
-    cfg.service(intra);
 }

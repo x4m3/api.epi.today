@@ -1,10 +1,10 @@
 use crate::intra::{autologin, client};
 use crate::v1::data;
-use actix_web::{get, http::StatusCode, web, HttpRequest, HttpResponse, Responder};
+use actix_web::{get, http::StatusCode, HttpRequest, HttpResponse, Responder};
 use serde_json::Value;
 
 #[get("/info")]
-async fn info(req: HttpRequest) -> impl Responder {
+pub async fn info(req: HttpRequest) -> impl Responder {
     let autologin = match autologin::get_from_header(&req) {
         Some(autologin) => autologin,
         _ => {
@@ -115,8 +115,4 @@ async fn info(req: HttpRequest) -> impl Responder {
     };
 
     HttpResponse::Ok().json(user)
-}
-
-pub fn init_routes(cfg: &mut web::ServiceConfig) {
-    cfg.service(info);
 }
