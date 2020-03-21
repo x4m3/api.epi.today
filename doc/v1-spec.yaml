@@ -83,6 +83,8 @@ paths:
       tags:
         - "planning"
       summary: "Get planning of particular day"
+      consumes:
+        - "application/json"
       parameters:
         - in: "header"
           name: "autologin"
@@ -113,33 +115,16 @@ paths:
       consumes:
         - "application/json"
       parameters:
-      - in: "header"
-        name: "autologin"
-        required: true
-        type: "string"
-        pattern: '^([a-z0-9]{40})$'
-      - in: "body"
-        name: "body"
-        required: true
-        schema:
-          allOf:
-            - type: "object"
-              properties:
-                year:
-                  type: "integer"
-                  pattern: '^20\d\d$'
-                code_module:
-                  type: "string"
-                  pattern: '^([A-Z])-([A-Z]*)-([0-9]*)$'
-                code_instance:
-                  type: "string"
-                  pattern: '^([A-Z]*)-([0-9]*)-([0-9])$'
-                code_acti:
-                  type: "string"
-                  pattern: '^(acti-\d*)$'
-                email:
-                  type: "string"
-                  pattern: '^([A-Z0-9a-z.-]+@epitech.eu)$'
+        - in: "header"
+          name: "autologin"
+          required: true
+          type: "string"
+          pattern: '^([a-z0-9]{40})$'
+        - in: "body"
+          name: "body"
+          required: true
+          schema:
+            $ref: '#/definitions/RdvParams'
       produces:
         - "application/json"
       responses:
@@ -253,7 +238,7 @@ paths:
     get:
       tags:
         - "custom_planning"
-      summary: "Get list of events in custom planning of particular day"
+      summary: "Get custom planning of particular day"
       consumes:
         - "application/json"
       parameters:
@@ -390,6 +375,23 @@ definitions:
         type: "string"
       registration_status:
         type: "boolean"
+  RdvParams:
+    type: "object"
+    properties:
+      year:
+        type: "integer"
+      code_module:
+        type: "string"
+        pattern: '^([A-Z])-([A-Z]*)-([0-9]*)$'
+      code_instance:
+        type: "string"
+        pattern: '^([A-Z]*)-([0-9]*)-([0-9])$'
+      code_acti:
+        type: "string"
+        pattern: '^(acti-\d*)$'
+      email:
+        type: "string"
+        pattern: '^([A-Z0-9a-z.-]+@epitech.eu)$'
   RdvInfo:
     type: "object"
     properties:
