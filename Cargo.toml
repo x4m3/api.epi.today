@@ -1,6 +1,6 @@
 [package]
 name = "api-epi-today"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Philippe Loctaux <p@philippeloctaux.com>"]
 edition = "2018"
 repository = "https://github.com/x4m3/api.epi.today"
