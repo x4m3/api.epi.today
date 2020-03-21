@@ -38,7 +38,7 @@ paths:
         - "application/json"
       responses:
         200:
-          description: "2epi2day4you"
+          description: "api version"
   /health/intra:
     get:
       tags:
@@ -78,7 +78,7 @@ paths:
           description: "could not get requested information"
         503:
           description: "unable make request to intra"
-  /planning/day/{year}-{month}-{date}:
+  /planning/day:
     get:
       tags:
         - "planning"
@@ -89,21 +89,11 @@ paths:
           required: true
           type: "string"
           pattern: '^([a-z0-9]{40})$'
-        - in: "path"
-          name: "year"
+        - in: "body"
+          name: "body"
           required: true
-          type: "string"
-          pattern: '^20\d\d$'
-        - in: "path"
-          name: "month"
-          required: true
-          type: "string"
-          pattern: '^(0[1-9]|1[012])$'
-        - in: "path"
-          name: "date"
-          required: true
-          type: "string"
-          pattern: '^(0[1-9]|[12][0-9]|3[01])$'
+          schema:
+            $ref: '#/definitions/PlanningDayParams'
       produces:
         - "application/json"
       responses:
@@ -261,7 +251,7 @@ paths:
               $ref: '#/definitions/CustomPlannings'
         503:
           description: "unable to get information (intra is probably down)"
-  /custom_planning/day/{year}-{month}-{date}:
+  /custom_planning/day:
     get:
       tags:
         - "custom_planning"
@@ -274,30 +264,11 @@ paths:
           required: true
           type: "string"
           pattern: '^([a-z0-9]{40})$'
-        - in: "path"
-          name: "year"
-          required: true
-          type: "string"
-          pattern: '^20\d\d$'
-        - in: "path"
-          name: "month"
-          required: true
-          type: "string"
-          pattern: '^(0[1-9]|1[012])$'
-        - in: "path"
-          name: "date"
-          required: true
-          type: "string"
-          pattern: '^(0[1-9]|[12][0-9]|3[01])$'
         - in: "body"
           name: "body"
           required: true
           schema:
-              type: "object"
-              properties:
-                calendar_id:
-                  type: "string"
-                  pattern: '^([0-9]*)$'
+            $ref: '#/definitions/CustomPlanningDayParams'
       produces:
         - "application/json"
       responses:
@@ -376,9 +347,17 @@ definitions:
       credits:
         type: "integer"
       gpa:
-        type: "integer"
-        format: "double"
+        type: "string"
       log:
+        type: "number"
+  PlanningDayParams:
+    type: "object"
+    properties:
+      year:
+        type: "integer"
+      month:
+        type: "integer"
+      day:
         type: "integer"
   PlanningDay:
     type: "object"
@@ -443,18 +422,27 @@ definitions:
   CustomPlannings:
     type: "object"
     properties:
+      id:
+        type: "integer"
+      name:
+        type: "string"
+  CustomPlanningDayParams:
+    type: "object"
+    properties:
       calendar_id:
-        type: "string"
-      calendar_title:
-        type: "string"
+        type: "integer"
+      year:
+        type: "integer"
+      month:
+        type: "integer"
+      day:
+        type: "integer"
   CustomPlanningDay:
     type: "object"
     allOf:
       - $ref: "#/definitions/CustomPlannings"
       - type: "object"
         properties:
-          calendar_id:
-            type: "string"
           event_id:
             type: "string"
           title:
@@ -473,8 +461,6 @@ definitions:
     type: "object"
     properties:
       calendar_id:
-        type: "string"
-        pattern: '^([0-9]*)$'
+        type: "integer"
       event_id:
-        type: "string"
-        pattern: '^([0-9]*)$'
+        type: "integer"
