@@ -90,9 +90,9 @@ pub async fn day(
         Err(_) => return HttpResponse::Ok().json(list),
     };
 
-    for planning in &raw_json {
+    for event in &raw_json {
         list.push(data::CustomPlanningEventResult {
-            calendar_id: match planning["id_calendar"].as_u64() {
+            calendar_id: match event["id_calendar"].as_u64() {
                 Some(calendar_id) => calendar_id,
                 None => {
                     return HttpResponse::InternalServerError().json(data::Default {
@@ -101,7 +101,7 @@ pub async fn day(
                 }
             },
 
-            event_id: match planning["id"].as_u64() {
+            event_id: match event["id"].as_u64() {
                 Some(event_id) => event_id,
                 None => {
                     return HttpResponse::InternalServerError().json(data::Default {
@@ -110,7 +110,7 @@ pub async fn day(
                 }
             },
 
-            title: match planning["title"].as_str() {
+            title: match event["title"].as_str() {
                 Some(title) => String::from(title),
                 None => {
                     return HttpResponse::InternalServerError().json(data::Default {
@@ -119,7 +119,7 @@ pub async fn day(
                 }
             },
 
-            room: match planning["location"].as_str() {
+            room: match event["location"].as_str() {
                 Some(room) => match format::room(room) {
                     Some(room) => room,
                     None => {
@@ -132,7 +132,7 @@ pub async fn day(
             },
 
             // TODO: correct formatting of time
-            time_start: match planning["start"].as_str() {
+            time_start: match event["start"].as_str() {
                 Some(start) => String::from(start),
                 None => {
                     return HttpResponse::InternalServerError().json(data::Default {
@@ -142,7 +142,7 @@ pub async fn day(
             },
 
             // TODO: correct formatting of time
-            time_end: match planning["end"].as_str() {
+            time_end: match event["end"].as_str() {
                 Some(time_end) => String::from(time_end),
                 None => {
                     return HttpResponse::InternalServerError().json(data::Default {
@@ -151,7 +151,7 @@ pub async fn day(
                 }
             },
 
-            teacher: match planning["maker"]["title"].as_str() {
+            teacher: match event["maker"]["title"].as_str() {
                 Some(teacher) => String::from(teacher),
                 None => {
                     return HttpResponse::InternalServerError().json(data::Default {
@@ -160,7 +160,16 @@ pub async fn day(
                 }
             },
 
-            registration_status: true,
+            registration_status: match event["event_registered"].as_str() {
+                Some(registration_status) => {
+                    if registration_status == "registered" {
+                        true
+                    } else {
+                        false
+                    }
+                }
+                None => false,
+            },
         })
     }
 
