@@ -1,7 +1,7 @@
+use crate::date;
 use crate::intra::{autologin, client};
 use crate::v1::data;
 use actix_web::{get, http::StatusCode, web, HttpRequest, HttpResponse, Responder};
-use chrono::NaiveDateTime;
 use serde_json::Value;
 
 #[get("/day")]
@@ -33,12 +33,9 @@ pub async fn day(
         }
     }
 
-    let full_date = match NaiveDateTime::parse_from_str(
-        &format!("{} 00:00:00", input.date),
-        "%Y-%m-%d %H:%M:%S",
-    ) {
-        Ok(full_date) => full_date,
-        Err(_) => {
+    let full_date = match date::check_yyyy_mm_dd(&input.date) {
+        Some(full_date) => full_date,
+        None => {
             return HttpResponse::BadRequest().json(data::Default {
                 msg: String::from("invalid date provided"),
             });
@@ -54,10 +51,10 @@ pub async fn day(
         }
     };
 
-    let date = full_date.format("%Y-%m-%d").to_string();
+    let formatted_date = full_date.format("%Y-%m-%d").to_string();
     let path = format!(
         "/planning/{}/events?format=json&start={}&end={}",
-        input.calendar_id, date, date
+        input.calendar_id, formatted_date, formatted_date
     );
     let res = match client::get_path_auth(&client, &autologin, &path).await {
         Ok(res) => res,
