@@ -408,7 +408,6 @@ definitions:
     properties:
       year:
         type: "integer"
-        pattern: '^20\d\d$'
       code_module:
         type: "string"
         pattern: '^([A-Z])-([A-Z]*)-([0-9]*)$'
@@ -426,7 +425,6 @@ definitions:
     properties:
       year:
         type: "integer"
-        pattern: '^20\d\d$'
       code_module:
         type: "string"
         pattern: '^([A-Z])-([A-Z]*)-([0-9]*)$'
