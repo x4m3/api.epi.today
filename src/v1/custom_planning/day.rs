@@ -90,27 +90,73 @@ pub async fn day(
         Err(_) => return HttpResponse::Ok().json(list),
     };
 
-    // for planning in &raw_json {
-    //     list.push(data::CustomPlanningEventResult {
-    //         id: match planning["id"].as_u64() {
-    //             Some(id) => id,
-    //             None => {
-    //                 return HttpResponse::InternalServerError().json(data::Default {
-    //                     msg: String::from("value `id` does not exist"),
-    //                 })
-    //             }
-    //         },
+    for planning in &raw_json {
+        list.push(data::CustomPlanningEventResult {
+            calendar_id: match planning["id_calendar"].as_u64() {
+                Some(calendar_id) => calendar_id,
+                None => {
+                    return HttpResponse::InternalServerError().json(data::Default {
+                        msg: String::from("value `id_calendar` does not exist"),
+                    })
+                }
+            },
 
-    //         name: match planning["title"].as_str() {
-    //             Some(name) => String::from(name),
-    //             None => {
-    //                 return HttpResponse::InternalServerError().json(data::Default {
-    //                     msg: String::from("value `title` does not exist"),
-    //                 })
-    //             }
-    //         },
-    //     })
-    // }
+            event_id: match planning["id"].as_u64() {
+                Some(event_id) => event_id,
+                None => {
+                    return HttpResponse::InternalServerError().json(data::Default {
+                        msg: String::from("value `event_id` does not exist"),
+                    })
+                }
+            },
+
+            title: match planning["title"].as_str() {
+                Some(title) => String::from(title),
+                None => {
+                    return HttpResponse::InternalServerError().json(data::Default {
+                        msg: String::from("value `title` does not exist"),
+                    })
+                }
+            },
+
+            // TODO: correct formatting of room
+            room: match planning["location"].as_str() {
+                Some(room) => String::from(room),
+                None => String::from("At the bar 🍺"),
+            },
+
+            // TODO: correct formatting of time
+            time_start: match planning["start"].as_str() {
+                Some(start) => String::from(start),
+                None => {
+                    return HttpResponse::InternalServerError().json(data::Default {
+                        msg: String::from("value `start` does not exist"),
+                    })
+                }
+            },
+
+            // TODO: correct formatting of time
+            time_end: match planning["end"].as_str() {
+                Some(time_end) => String::from(time_end),
+                None => {
+                    return HttpResponse::InternalServerError().json(data::Default {
+                        msg: String::from("value `end` does not exist"),
+                    })
+                }
+            },
+
+            teacher: match planning["maker"]["title"].as_str() {
+                Some(teacher) => String::from(teacher),
+                None => {
+                    return HttpResponse::InternalServerError().json(data::Default {
+                        msg: String::from("value `maker.title` does not exist"),
+                    })
+                }
+            },
+
+            registration_status: true,
+        })
+    }
 
     HttpResponse::Ok().json(list)
 }

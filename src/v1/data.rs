@@ -71,9 +71,6 @@ pub struct CustomPlanningEventResult {
     /// Custom planning ID
     pub calendar_id: u64,
 
-    /// Custom planning name
-    pub calendar_name: String,
-
     /// Event ID
     pub event_id: u64,
 
