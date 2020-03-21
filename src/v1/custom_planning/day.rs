@@ -1,5 +1,5 @@
 use crate::date;
-use crate::intra::{autologin, client};
+use crate::intra::{autologin, client, format};
 use crate::v1::data;
 use actix_web::{get, http::StatusCode, web, HttpRequest, HttpResponse, Responder};
 use serde_json::Value;
@@ -119,9 +119,15 @@ pub async fn day(
                 }
             },
 
-            // TODO: correct formatting of room
             room: match planning["location"].as_str() {
-                Some(room) => String::from(room),
+                Some(room) => match format::room(room) {
+                    Some(room) => room,
+                    None => {
+                        return HttpResponse::InternalServerError().json(data::Default {
+                            msg: String::from("formatting value `location` failed"),
+                        })
+                    }
+                },
                 None => String::from("At the bar 🍺"),
             },
 

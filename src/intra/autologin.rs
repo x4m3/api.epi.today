@@ -16,13 +16,14 @@ pub fn get_from_header<'a>(req: &'a HttpRequest) -> Option<&'a str> {
 /// # Example
 ///
 /// ```
-/// use crate::intra_client;
+/// use crate::intra::autologin;
+///
 /// let good_autologin = format!("abcdefghijklmnopqrstuvwxyz1234567890abcd");
-/// let res_ok = intra_autologin::autologin(&good_autologin);
+/// let res_ok = autologin::check(&good_autologin);
 /// assert_eq!(res_ok, true);
 ///
 /// let bad_autologin = format!("abcdef");
-/// let res_ko = intra_autologin::autologin(&bad_autologin);
+/// let res_ko = autologin::check(&bad_autologin);
 /// assert_eq!(res_ko, false);
 /// ```
 pub fn check(autologin: &str) -> Option<bool> {
