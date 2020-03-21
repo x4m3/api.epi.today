@@ -122,7 +122,7 @@ pub async fn day(
             // TODO: correct formatting of room
             room: match planning["location"].as_str() {
                 Some(room) => String::from(room),
-                None => String::from("At the bar 🍺"),
+                None => String::from("At the bar"),
             },
 
             // TODO: correct formatting of time
