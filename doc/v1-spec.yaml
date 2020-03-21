@@ -109,7 +109,7 @@ paths:
     get:
       tags:
         - "planning"
-      summary: "Get planning of particular rendez-vous"
+      summary: "Get info of particular rendez-vous"
       consumes:
         - "application/json"
       parameters:
@@ -273,7 +273,9 @@ paths:
         200:
           description: "List of events"
           schema:
-            $ref: '#/definitions/CustomPlanningDay'
+            type: "array"
+            items:
+              $ref: '#/definitions/CustomPlanningDay'
         503:
           description: "unable to get information (intra is probably down)"
         404:
