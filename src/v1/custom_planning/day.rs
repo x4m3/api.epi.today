@@ -131,9 +131,15 @@ pub async fn day(
                 None => String::from("At the bar 🍺"),
             },
 
-            // TODO: correct formatting of time
             time_start: match event["start"].as_str() {
-                Some(start) => String::from(start),
+                Some(start) => match date::extract_time(&start) {
+                    Some(start) => start,
+                    None => {
+                        return HttpResponse::InternalServerError().json(data::Default {
+                            msg: String::from("formatting value `start` failed"),
+                        })
+                    }
+                },
                 None => {
                     return HttpResponse::InternalServerError().json(data::Default {
                         msg: String::from("value `start` does not exist"),
@@ -141,9 +147,15 @@ pub async fn day(
                 }
             },
 
-            // TODO: correct formatting of time
             time_end: match event["end"].as_str() {
-                Some(time_end) => String::from(time_end),
+                Some(end) => match date::extract_time(&end) {
+                    Some(end) => end,
+                    None => {
+                        return HttpResponse::InternalServerError().json(data::Default {
+                            msg: String::from("formatting value `end` failed"),
+                        })
+                    }
+                },
                 None => {
                     return HttpResponse::InternalServerError().json(data::Default {
                         msg: String::from("value `end` does not exist"),
