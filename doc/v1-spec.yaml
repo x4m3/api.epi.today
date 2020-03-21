@@ -338,12 +338,9 @@ definitions:
   PlanningDayParams:
     type: "object"
     properties:
-      year:
-        type: "integer"
-      month:
-        type: "integer"
-      day:
-        type: "integer"
+      date:
+        type: "string"
+        pattern: "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$"
   PlanningDay:
     type: "object"
     properties:
@@ -358,6 +355,8 @@ definitions:
       code_event:
         type: "string"
       is_rdv:
+        type: "boolean"
+      is_custom:
         type: "boolean"
       title:
         type: "string"
@@ -456,12 +455,9 @@ definitions:
     properties:
       id:
         type: "integer"
-      year:
-        type: "integer"
-      month:
-        type: "integer"
-      day:
-        type: "integer"
+      date:
+        type: "string"
+        pattern: "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$"
   CustomPlanningDay:
     type: "object"
     properties:
