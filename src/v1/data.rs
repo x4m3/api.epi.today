@@ -57,16 +57,10 @@ pub struct CustomPlanningList {
 #[derive(Deserialize)]
 pub struct CustomPlanningEventInput {
     /// Custom planning ID
-    pub id: u64,
+    pub calendar_id: u64,
 
-    /// Year requested
-    pub year: u64,
-
-    /// Month requested
-    pub month: u64,
-
-    /// Day requested
-    pub day: u64,
+    /// Requested date
+    pub date: String,
 }
 
 /// Custom planning event result data type

@@ -278,6 +278,7 @@ version = "1.0.0"
 dependencies = [
  "actix-rt",
  "actix-web",
+ "chrono",
  "dotenv",
  "env_logger",
  "log",
