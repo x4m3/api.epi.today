@@ -454,7 +454,7 @@ definitions:
   CustomPlanningDayParams:
     type: "object"
     properties:
-      calendar_id:
+      id:
         type: "integer"
       year:
         type: "integer"
@@ -464,24 +464,25 @@ definitions:
         type: "integer"
   CustomPlanningDay:
     type: "object"
-    allOf:
-      - $ref: "#/definitions/CustomPlannings"
-      - type: "object"
-        properties:
-          event_id:
-            type: "string"
-          title:
-            type: "string"
-          room:
-            type: "string"
-          time_start:
-            type: "string"
-          time_end:
-            type: "string"
-          teacher:
-            type: "string"
-          registration_status:
-            type: "boolean"
+    properties:
+      calendar_id:
+        type: "integer"
+      calendar_name:
+        type: "string"
+      event_id:
+        type: "integer"
+      title:
+        type: "string"
+      room:
+        type: "string"
+      time_start:
+        type: "string"
+      time_end:
+        type: "string"
+      teacher:
+        type: "string"
+      registration_status:
+        type: "boolean"
   CustomPlanningEventParams:
     type: "object"
     properties:

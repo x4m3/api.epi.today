@@ -1,10 +1,13 @@
 use crate::intra::{autologin, client};
 use crate::v1::data;
-use actix_web::{get, http::StatusCode, HttpRequest, HttpResponse, Responder};
+use actix_web::{get, http::StatusCode, web, HttpRequest, HttpResponse, Responder};
 use serde_json::Value;
 
-#[get("/list")]
-pub async fn list(req: HttpRequest) -> impl Responder {
+#[get("/day")]
+pub async fn day(
+    req: HttpRequest,
+    input: web::Json<data::CustomPlanningEventInput>,
+) -> impl Responder {
     let autologin = match autologin::get_from_header(&req) {
         Some(autologin) => autologin,
         _ => {
@@ -29,6 +32,8 @@ pub async fn list(req: HttpRequest) -> impl Responder {
         }
     }
 
+    // TODO: get json values and check year, month, day (check if valid)
+
     let client = match client::create_client() {
         Ok(client) => client,
         Err(_) => {
@@ -38,7 +43,7 @@ pub async fn list(req: HttpRequest) -> impl Responder {
         }
     };
 
-    let path = format!("/planning/manage/?format=json");
+    let path = format!("/planning/xyz/events?format=json&start=yyyy-mm-dd&end=yyyy-mm-dd");
     let res = match client::get_path_auth(&client, &autologin, &path).await {
         Ok(res) => res,
         Err(_) => {
@@ -63,7 +68,7 @@ pub async fn list(req: HttpRequest) -> impl Responder {
         }
     };
 
-    let mut list: Vec<data::CustomPlanningList> = Vec::new();
+    let mut list: Vec<data::CustomPlanningEventResult> = Vec::new();
 
     // if json parsing fails, that means there are no plannings
     // json parsing fails because the intra returns an empty object
@@ -74,7 +79,7 @@ pub async fn list(req: HttpRequest) -> impl Responder {
     };
 
     for planning in &raw_json {
-        list.push(data::CustomPlanningList {
+        list.push(data::CustomPlanningEventResult {
             id: match planning["id"].as_u64() {
                 Some(id) => id,
                 None => {

@@ -1,4 +1,4 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// Default data type
 ///
@@ -39,14 +39,65 @@ pub struct User {
     pub log: f64,
 }
 
-/// List Custom Planning data type
+/// Custom planning list data type
 ///
 /// Used for storing list of custom plannings
 #[derive(Serialize)]
-pub struct ListCustomPlanning {
+pub struct CustomPlanningList {
     /// Custom planning ID
     pub id: u64,
 
-    /// Custom planing name
+    /// Custom planning name
     pub name: String,
+}
+
+/// Custom planning event input data type
+///
+/// Used for custom planning event requests
+#[derive(Deserialize)]
+pub struct CustomPlanningEventInput {
+    /// Custom planning ID
+    pub id: u64,
+
+    /// Year requested
+    pub year: u64,
+
+    /// Month requested
+    pub month: u64,
+
+    /// Day requested
+    pub day: u64,
+}
+
+/// Custom planning event result data type
+///
+/// Used for custom planning event responses
+#[derive(Serialize)]
+pub struct CustomPlanningEventResult {
+    /// Custom planning ID
+    pub calendar_id: u64,
+
+    /// Custom planning name
+    pub calendar_name: String,
+
+    /// Event ID
+    pub event_id: u64,
+
+    /// Event title
+    pub title: String,
+
+    /// Event room
+    pub room: String,
+
+    /// Event start
+    pub time_start: String,
+
+    /// Event end
+    pub time_end: String,
+
+    /// Event teacher
+    pub teacher: String,
+
+    /// Registration status
+    pub registration_status: bool,
 }
