@@ -38,3 +38,15 @@ pub struct User {
     /// Weekly log in hours (continuous)
     pub log: f64,
 }
+
+/// List Custom Planning data type
+///
+/// Used for storing list of custom plannings
+#[derive(Serialize)]
+pub struct ListCustomPlanning {
+    /// Custom planning ID
+    pub id: u64,
+
+    /// Custom planing name
+    pub name: String,
+}
