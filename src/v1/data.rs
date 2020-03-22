@@ -109,3 +109,25 @@ pub struct CustomPlanningEventParams {
     /// Event ID
     pub event_id: u64,
 }
+
+/// Planning event params data type
+///
+/// Used for registering or un-registering to planning events
+/// Used only for input
+#[derive(Deserialize)]
+pub struct PlanningEventParams {
+    // School year of event
+    pub year: u64,
+
+    // Code of module
+    pub code_module: String,
+
+    // Code of module instance
+    pub code_instance: String,
+
+    // Code of activity
+    pub code_acti: String,
+
+    // Code of event
+    pub code_event: String,
+}
