@@ -1,4 +1,4 @@
-use crate::intra::{autologin, check, client};
+use crate::intra::{autologin, check, client, format};
 use crate::v1::data;
 use actix_web::{get, http::StatusCode, web, HttpRequest, HttpResponse, Responder};
 use serde_json::Value;
@@ -87,6 +87,20 @@ pub async fn rdv(req: HttpRequest, input: web::Json<data::PlanningRdvParams>) ->
         }
     };
 
+    // Extract rdv title
+    let rdv_title = match raw_json["events"][0]["title"].as_str() {
+        Some(title) => String::from(title),
+        None => {
+            return HttpResponse::InternalServerError().json(data::Default {
+                msg: String::from("value `events.0.title` does not exist"),
+            })
+        }
+    };
+
+    // Find slot where email address matches and extract start and end times
+    let mut time_start = String::new();
+    let mut time_end = String::new();
+
     let slots = match raw_json["slots"].as_array() {
         Some(slots) => slots,
         None => {
@@ -96,21 +110,64 @@ pub async fn rdv(req: HttpRequest, input: web::Json<data::PlanningRdvParams>) ->
         }
     };
     for slot in slots {
-        println!("slot : {}", slot);
+        // println!("slot : {}", slot["slots"]);
+
+        let slots = match slot["slots"].as_array() {
+            Some(slots) => slots,
+            None => {
+                return HttpResponse::InternalServerError().json(data::Default {
+                    msg: String::from("value `slots.[].slots` is not an array"),
+                })
+            }
+        };
+        for slot in slots {
+            // println!("---- slot : {}", slot);
+
+            let master_login = match slot["master"]["login"].as_str() {
+                Some(login) => login,
+                None => "null",
+            };
+            println!(
+                "--------------------------------- master login: {}",
+                master_login
+            );
+            if master_login == input.email {
+                println!("user is group master!");
+                let raw_date = match slot["date"].as_str() {
+                    Some(raw_date) => raw_date,
+                    None => {
+                        return HttpResponse::InternalServerError().json(data::Default {
+                            msg: String::from("value `slots.[].slots.[].date` is not a string"),
+                        })
+                    }
+                };
+                time_start = match format::time(raw_date) {
+                    Some(start) => start,
+                    None => {
+                        return HttpResponse::InternalServerError().json(data::Default {
+                            msg: String::from("formatting value `slots.[].slots.[].date` failed"),
+                        })
+                    }
+                };
+                let raw_duration = match slot["duration"].as_u64() {
+                    Some(raw_duration) => raw_duration,
+                    None => {
+                        return HttpResponse::InternalServerError().json(data::Default {
+                            msg: String::from("value `slots.[].slots.[].duration` is not a number"),
+                        })
+                    }
+                };
+                println!("duration {}", raw_duration);
+            } else {
+                println!("user is not group master");
+            }
+        }
     }
 
     let rdv = data::PlanningRdvResult {
-        title: match raw_json["events"][0]["title"].as_str() {
-            Some(title) => String::from(title),
-            None => {
-                return HttpResponse::InternalServerError().json(data::Default {
-                    msg: String::from("value `events.0.title` does not exist"),
-                })
-            }
-        },
-
-        time_start: String::from("start"),
-        time_end: String::from("end"),
+        title: rdv_title,
+        time_start: time_start,
+        time_end: time_end,
     };
 
     HttpResponse::Ok().json(rdv)
