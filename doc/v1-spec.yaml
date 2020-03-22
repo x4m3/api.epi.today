@@ -132,6 +132,8 @@ paths:
           description: "Information about rendez-vous"
           schema:
             $ref: '#/definitions/RdvInfo'
+        500:
+          description: "failed to extract all information"
         503:
           description: "unable to get information (intra is probably down)"
   /planning/event:

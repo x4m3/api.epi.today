@@ -110,8 +110,6 @@ pub async fn rdv(req: HttpRequest, input: web::Json<data::PlanningRdvParams>) ->
         }
     };
     for slot in slots {
-        // println!("slot : {}", slot["slots"]);
-
         let slots = match slot["slots"].as_array() {
             Some(slots) => slots,
             None => {
@@ -121,19 +119,14 @@ pub async fn rdv(req: HttpRequest, input: web::Json<data::PlanningRdvParams>) ->
             }
         };
         for slot in slots {
-            // println!("---- slot : {}", slot);
-
+            // Extract login of group master
             let master_login = match slot["master"]["login"].as_str() {
                 Some(login) => login,
                 None => "null",
             };
-            println!(
-                "--------------------------------- master login: {}",
-                master_login
-            );
-            if master_login == input.email {
-                println!("user is group master!");
 
+            // If email is group master
+            if master_login == input.email {
                 time_start = match format::rdv_time_start(&slot["date"]) {
                     Some(time_start) => time_start,
                     None => {
@@ -144,8 +137,6 @@ pub async fn rdv(req: HttpRequest, input: web::Json<data::PlanningRdvParams>) ->
                         });
                     }
                 };
-                println!("time_start {}", time_start);
-
                 time_end = match format::rdv_time_end(&slot) {
                     Some(time_end) => time_end,
                     None => {
@@ -156,16 +147,56 @@ pub async fn rdv(req: HttpRequest, input: web::Json<data::PlanningRdvParams>) ->
                         });
                     }
                 };
-                println!("time_end {}", time_end);
             } else {
-                println!("user is not group master");
+                // Email is a group member
+
+                let members = match slot["members"].as_array() {
+                    Some(members) => members,
+                    None => {
+                        return HttpResponse::InternalServerError().json(data::Default {
+                            msg: String::from("value `slots.[].slots.[].members` is not an array"),
+                        })
+                    }
+                };
+                for member in members {
+                    // Extract login of group member
+                    let member_login = match member["login"].as_str() {
+                        Some(login) => login,
+                        None => "null",
+                    };
+
+                    // If email matches
+                    if member_login == input.email {
+                        time_start = match format::rdv_time_start(&slot["date"]) {
+                            Some(time_start) => time_start,
+                            None => {
+                                return HttpResponse::InternalServerError().json(data::Default {
+                                    msg: String::from(
+                                        "value start of `slots.[].slots.[].date` failed to extract",
+                                    ),
+                                });
+                            }
+                        };
+                        time_end = match format::rdv_time_end(&slot) {
+                            Some(time_end) => time_end,
+                            None => {
+                                return HttpResponse::InternalServerError().json(data::Default {
+                                    msg: String::from(
+                                        "value end of `slots.[].slots.[].date` failed to extract",
+                                    ),
+                                });
+                            }
+                        };
+                    }
+                }
             }
         }
     }
 
+    // Could not find time associated to login in either group master or member
     if time_start.len() == 0 || time_end.len() == 0 {
         return HttpResponse::InternalServerError().json(data::Default {
-            msg: String::from("failed to extract start and end of rdv"),
+            msg: String::from("failed to extract start and end of rdv (login not found)"),
         });
     }
 
