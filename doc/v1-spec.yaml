@@ -289,7 +289,11 @@ paths:
         - "application/json"
       responses:
         200:
-          description: "Registration result"
+          description: "registration ok"
+        400:
+          description: "past event"
+        500:
+          description: "already registered"
         503:
           description: "unable to get reply (intra is probably down)"
     delete:
@@ -313,7 +317,11 @@ paths:
         - "application/json"
       responses:
         200:
-          description: "Un-registration result"
+          description: "unregistration ok"
+        400:
+          description: "past event"
+        500:
+          description: "already unregistered"
         503:
           description: "unable to get reply (intra is probably down)"
 

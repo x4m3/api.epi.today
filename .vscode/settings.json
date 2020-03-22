@@ -14,7 +14,8 @@
         "nsstat",
         "reqwest",
         "scolaryear",
-        "titlemodule"
+        "titlemodule",
+        "unregister"
     ],
     "files.encoding": "utf8",
     "files.autoGuessEncoding": false
