@@ -1,4 +1,4 @@
-use crate::intra::{autologin, client, format::check};
+use crate::intra::{autologin, check, client};
 use crate::v1::data;
 use actix_web::{delete, http::StatusCode, web, HttpRequest, HttpResponse, Responder};
 use serde_json::Value;

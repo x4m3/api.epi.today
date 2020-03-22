@@ -1,5 +1,4 @@
-use crate::date;
-use crate::intra::{autologin, client, format};
+use crate::intra::{autologin, check, client, format};
 use crate::v1::data;
 use actix_web::{get, http::StatusCode, web, HttpRequest, HttpResponse, Responder};
 use serde_json::Value;
@@ -33,7 +32,7 @@ pub async fn day(
         }
     }
 
-    let full_date = match date::check_yyyy_mm_dd(&input.date) {
+    let full_date = match check::yyyy_mm_dd(&input.date) {
         Some(full_date) => full_date,
         None => {
             return HttpResponse::BadRequest().json(data::Default {
@@ -132,7 +131,7 @@ pub async fn day(
             },
 
             time_start: match event["start"].as_str() {
-                Some(start) => match date::extract_time(&start) {
+                Some(start) => match format::time(&start) {
                     Some(start) => start,
                     None => {
                         return HttpResponse::InternalServerError().json(data::Default {
@@ -148,7 +147,7 @@ pub async fn day(
             },
 
             time_end: match event["end"].as_str() {
-                Some(end) => match date::extract_time(&end) {
+                Some(end) => match format::time(&end) {
                     Some(end) => end,
                     None => {
                         return HttpResponse::InternalServerError().json(data::Default {

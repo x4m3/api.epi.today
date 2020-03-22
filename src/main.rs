@@ -5,7 +5,6 @@ use std::env;
 #[macro_use]
 extern crate log;
 
-mod date;
 mod intra;
 mod v1;
 
