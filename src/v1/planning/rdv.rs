@@ -133,35 +133,40 @@ pub async fn rdv(req: HttpRequest, input: web::Json<data::PlanningRdvParams>) ->
             );
             if master_login == input.email {
                 println!("user is group master!");
-                let raw_date = match slot["date"].as_str() {
-                    Some(raw_date) => raw_date,
+
+                time_start = match format::rdv_time_start(&slot["date"]) {
+                    Some(time_start) => time_start,
                     None => {
                         return HttpResponse::InternalServerError().json(data::Default {
-                            msg: String::from("value `slots.[].slots.[].date` is not a string"),
-                        })
+                            msg: String::from(
+                                "value start of `slots.[].slots.[].date` failed to extract",
+                            ),
+                        });
                     }
                 };
-                time_start = match format::time(raw_date) {
-                    Some(start) => start,
+                println!("time_start {}", time_start);
+
+                time_end = match format::rdv_time_end(&slot) {
+                    Some(time_end) => time_end,
                     None => {
                         return HttpResponse::InternalServerError().json(data::Default {
-                            msg: String::from("formatting value `slots.[].slots.[].date` failed"),
-                        })
+                            msg: String::from(
+                                "value end of `slots.[].slots.[].date` failed to extract",
+                            ),
+                        });
                     }
                 };
-                let raw_duration = match slot["duration"].as_u64() {
-                    Some(raw_duration) => raw_duration,
-                    None => {
-                        return HttpResponse::InternalServerError().json(data::Default {
-                            msg: String::from("value `slots.[].slots.[].duration` is not a number"),
-                        })
-                    }
-                };
-                println!("duration {}", raw_duration);
+                println!("time_end {}", time_end);
             } else {
                 println!("user is not group master");
             }
         }
+    }
+
+    if time_start.len() == 0 || time_end.len() == 0 {
+        return HttpResponse::InternalServerError().json(data::Default {
+            msg: String::from("failed to extract start and end of rdv"),
+        });
     }
 
     let rdv = data::PlanningRdvResult {

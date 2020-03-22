@@ -1,5 +1,6 @@
-use chrono::NaiveDateTime;
+use chrono::{Duration, NaiveDateTime};
 use regex::Regex;
+use serde_json::Value;
 
 /// Prettifies a raw room format into easily-readable room name
 ///
@@ -58,4 +59,56 @@ pub fn time(raw_date_time: &str) -> Option<String> {
         Ok(date_time) => Some(date_time.format("%H:%M").to_string()),
         Err(_) => return None,
     }
+}
+
+/// Extract time from rdv start time
+///
+/// # Arguments
+///
+/// * `raw_object` - An object with start time
+///
+pub fn rdv_time_start(raw_object: &Value) -> Option<String> {
+    // Try to get string from raw_object `date`
+    let raw_date = match raw_object.as_str() {
+        Some(raw_date) => raw_date,
+        None => return None,
+    };
+
+    // Try to extract time
+    match time(raw_date) {
+        Some(start) => return Some(start),
+        None => return None,
+    }
+}
+
+/// Extract time from rdv start time with rdv duration
+///
+/// # Arguments
+///
+/// * `raw_object` - An object with start time and duration
+///
+pub fn rdv_time_end(raw_object: &Value) -> Option<String> {
+    // Try to get string from raw_object `date`
+    let raw_start = match raw_object["date"].as_str() {
+        Some(raw_start) => raw_start,
+        None => return None,
+    };
+
+    // Convert start time in date data
+    let start = match NaiveDateTime::parse_from_str(&raw_start, "%Y-%m-%d %H:%M:%S") {
+        Ok(start) => start,
+        Err(_) => return None,
+    };
+
+    // Try to get number from raw_object `duration`
+    let duration_mins = match raw_object["duration"].as_i64() {
+        Some(duration_mins) => duration_mins,
+        None => return None,
+    };
+
+    // Add duration to start date
+    let end = start + Duration::minutes(duration_mins);
+
+    // Format end time as string
+    Some(end.format("%H:%M").to_string())
 }
