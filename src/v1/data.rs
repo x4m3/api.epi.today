@@ -165,3 +165,41 @@ pub struct PlanningSubmitTokenParams {
     /// Token to send
     pub token: String,
 }
+
+/// Planning rdv params data type
+///
+/// Used for getting information about rdv
+/// Used only for input
+#[derive(Deserialize)]
+pub struct PlanningRdvParams {
+    // School year of event
+    pub year: u64,
+
+    // Code of module
+    pub code_module: String,
+
+    // Code of module instance
+    pub code_instance: String,
+
+    // Code of activity
+    pub code_acti: String,
+
+    // Student email address
+    pub email: String,
+}
+
+/// Planning rdv result data type
+///
+/// Used for getting information about rdv
+/// Used only for output
+#[derive(Serialize)]
+pub struct PlanningRdvResult {
+    // Rdv title
+    pub title: String,
+
+    // Rdv start
+    pub time_start: String,
+
+    // Rdv end
+    pub time_end: String,
+}

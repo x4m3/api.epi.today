@@ -98,6 +98,7 @@ pub mod check {
         activity: &str,
         event: &str,
     ) -> Option<String> {
+        // TODO: find a cleaner way to do this
         match check::module(module) {
             Some(res) => {
                 if res == false {
@@ -140,6 +141,62 @@ pub mod check {
                 }
             }
             None => return Some(String::from("field `event` is invalid")),
+        };
+
+        // Everything is good syntactically
+        None
+    }
+
+    /// Check input values of a planning rdv
+    pub fn planning_rdv(
+        module: &str,
+        instance: &str,
+        activity: &str,
+        email: &str,
+    ) -> Option<String> {
+        // TODO: find a cleaner way to do this
+        match check::module(module) {
+            Some(res) => {
+                if res == false {
+                    return Some(String::from("field `module` is invalid"));
+                } else {
+                    ()
+                }
+            }
+            None => return Some(String::from("field `module` is invalid")),
+        };
+
+        match check::instance(instance) {
+            Some(res) => {
+                if res == false {
+                    return Some(String::from("field `instance` is invalid"));
+                } else {
+                    ()
+                }
+            }
+            None => return Some(String::from("field `instance` is invalid")),
+        };
+
+        match check::activity(activity) {
+            Some(res) => {
+                if res == false {
+                    return Some(String::from("field `activity` is invalid"));
+                } else {
+                    ()
+                }
+            }
+            None => return Some(String::from("field `activity` is invalid")),
+        };
+
+        match check::email(email) {
+            Some(res) => {
+                if res == false {
+                    return Some(String::from("field `email` is invalid"));
+                } else {
+                    ()
+                }
+            }
+            None => return Some(String::from("field `email` is invalid")),
         };
 
         // Everything is good syntactically

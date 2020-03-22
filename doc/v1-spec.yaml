@@ -408,8 +408,6 @@ definitions:
         type: "string"
       time_end:
         type: "string"
-      registration_status:
-        type: "boolean"
   PlanningEventParams:
     type: "object"
     properties:
