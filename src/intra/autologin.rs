@@ -31,5 +31,14 @@ pub fn check(autologin: &str) -> Option<bool> {
         Ok(re) => re,
         Err(_) => return None,
     };
-    Some(re.is_match(autologin))
+
+    if re.is_match(autologin) == false {
+        return Some(false);
+    }
+
+    // TODO: make request to intra/admin/autolog?format=json
+    // 200 -> ok
+    // 404 -> autologin not good
+
+    Some(true)
 }
