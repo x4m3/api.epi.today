@@ -206,10 +206,8 @@ paths:
       responses:
         200:
           description: "Token submitted successfully"
-        403:
-          description: "could not subit token (with additional info)"
-          schema:
-            $ref: '#/definitions/PlanningEventTokenError'
+        500:
+          description: "could not register token (with additional info)"
         503:
           description: "unable to get information (intra is probably down)"
   /custom_planning/list:
@@ -448,11 +446,6 @@ definitions:
         pattern: '^(event-[0-9]*)$'
       token:
         type: "integer"
-  PlanningEventTokenError:
-    type: "object"
-    properties:
-      error:
-        type: "string"
   CustomPlannings:
     type: "object"
     properties:

@@ -131,3 +131,37 @@ pub struct PlanningEventParams {
     // Code of event
     pub code_event: String,
 }
+
+/// Planning token params data type
+///
+/// Used for registering a token to an event
+/// Used only for input
+#[derive(Deserialize)]
+pub struct PlanningTokenParams {
+    // School year of event
+    pub year: u64,
+
+    // Code of module
+    pub code_module: String,
+
+    // Code of module instance
+    pub code_instance: String,
+
+    // Code of activity
+    pub code_acti: String,
+
+    // Code of event
+    pub code_event: String,
+
+    // Token to register
+    pub token: u64,
+}
+
+/// Send a token
+///
+/// Used for sending a token to the intra
+#[derive(Serialize)]
+pub struct PlanningSubmitTokenParams {
+    /// Token to send
+    pub token: String,
+}

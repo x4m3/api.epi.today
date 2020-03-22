@@ -1,3 +1,4 @@
+use crate::v1::data;
 use reqwest;
 use std::time::Duration;
 
@@ -87,4 +88,25 @@ pub async fn post_path_auth(
 ) -> Result<reqwest::Response, reqwest::Error> {
     let url = format!("https://intra.epitech.eu/auth-{}{}", autologin, path);
     Ok(client.post(&url).send().await?)
+}
+
+/// Returns the result of a **post** request to the intra with token
+///
+/// # Arguments
+///
+/// * `client` - A reqwest client already built
+/// * `autologin` - A autologin information to make request as user
+/// * `path` - A string containing the path of the intra to request
+/// * `token` - A structure containing data to be sent as json
+pub async fn post_token(
+    client: &reqwest::Client,
+    autologin: &str,
+    path: &str,
+    token: &data::PlanningSubmitTokenParams,
+) -> Result<reqwest::Response, reqwest::Error> {
+    let url = format!(
+        "https://intra.epitech.eu/auth-{}{}/token?format=json",
+        autologin, path
+    );
+    Ok(client.post(&url).json(token).send().await?)
 }

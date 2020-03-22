@@ -1,7 +1,7 @@
 use actix_web::web;
 
 // Data types
-mod data;
+pub mod data;
 
 // Routes
 mod custom_planning;
