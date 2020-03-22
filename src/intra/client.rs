@@ -72,3 +72,19 @@ pub async fn get_path_auth(
     let final_request = format!("/auth-{}{}", autologin, path);
     Ok(get_path(&client, &final_request).await?)
 }
+
+/// Returns the result of a **post** request to the intra
+///
+/// # Arguments
+///
+/// * `client` - A reqwest client already built
+/// * `autologin` - A autologin information to make request as user
+/// * `path` - A string containing the path of the intra to request
+pub async fn post_path_auth(
+    client: &reqwest::Client,
+    autologin: &str,
+    path: &str,
+) -> Result<reqwest::Response, reqwest::Error> {
+    let url = format!("https://intra.epitech.eu/auth-{}{}", autologin, path);
+    Ok(client.post(&url).send().await?)
+}

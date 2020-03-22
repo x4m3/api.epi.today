@@ -44,7 +44,7 @@ pub async fn event_register(
         "/planning/{}/{}/subscribe?format=json",
         input.calendar_id, input.event_id
     );
-    let res = match client::get_path_auth(&client, &autologin, &path).await {
+    let res = match client::post_path_auth(&client, &autologin, &path).await {
         Ok(res) => res,
         Err(_) => {
             return HttpResponse::ServiceUnavailable().json(data::Default {
@@ -53,15 +53,36 @@ pub async fn event_register(
         }
     };
 
-    // could not register
-    if res.status() != StatusCode::OK {
-        return HttpResponse::Forbidden().json(data::Default {
-            msg: String::from("could not register"),
+    // registered
+    if res.status() == StatusCode::OK {
+        return HttpResponse::Ok().json(data::Default {
+            msg: String::from("registered"),
         });
     }
 
-    // registered
-    HttpResponse::Ok().json(data::Default {
-        msg: String::from("registered"),
+    // already registered
+    if res.status() == StatusCode::INTERNAL_SERVER_ERROR {
+        return HttpResponse::InternalServerError().json(data::Default {
+            msg: String::from("already registered"),
+        });
+    }
+
+    // past event
+    if res.status() == StatusCode::BAD_REQUEST {
+        return HttpResponse::BadRequest().json(data::Default {
+            msg: String::from("past event"),
+        });
+    }
+
+    // event does not exist
+    if res.status() == StatusCode::FORBIDDEN {
+        return HttpResponse::Forbidden().json(data::Default {
+            msg: String::from("event does not exist"),
+        });
+    }
+
+    // generic error
+    HttpResponse::InternalServerError().json(data::Default {
+        msg: String::from("could not register"),
     })
 }
