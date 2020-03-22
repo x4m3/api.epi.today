@@ -60,10 +60,10 @@ pub async fn event_unregister(
         });
     }
 
-    // already unregistered
+    // not registered
     if res.status() == StatusCode::INTERNAL_SERVER_ERROR {
         return HttpResponse::InternalServerError().json(data::Default {
-            msg: String::from("already unregistered"),
+            msg: String::from("not registered"),
         });
     }
 
