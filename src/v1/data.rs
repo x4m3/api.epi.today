@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 /// Default data type
 ///
-/// Used for generic output, such as errors
+/// Used for generic output, such as errors or general information
 #[derive(Serialize)]
 pub struct Default {
     /// Generic message
@@ -12,6 +12,7 @@ pub struct Default {
 /// User data type
 ///
 /// Used for storing user information
+/// Used only for outputs
 #[derive(Serialize)]
 pub struct User {
     /// Full name (firstname and lastname)
@@ -41,7 +42,8 @@ pub struct User {
 
 /// Custom planning list data type
 ///
-/// Used for storing list of custom plannings
+/// Used for getting list of custom plannings
+/// Used only for outputs
 #[derive(Serialize)]
 pub struct CustomPlanningList {
     /// Custom planning ID
@@ -53,7 +55,8 @@ pub struct CustomPlanningList {
 
 /// Custom planning event input data type
 ///
-/// Used for custom planning event requests
+/// Used for custom planning event
+/// Used only for input
 #[derive(Deserialize)]
 pub struct CustomPlanningEventInput {
     /// Custom planning ID
@@ -65,7 +68,8 @@ pub struct CustomPlanningEventInput {
 
 /// Custom planning event result data type
 ///
-/// Used for custom planning event responses
+/// Used for custom planning events
+/// Used only for outputs
 #[derive(Serialize)]
 pub struct CustomPlanningEventResult {
     /// Custom planning ID
@@ -91,4 +95,17 @@ pub struct CustomPlanningEventResult {
 
     /// Registration status
     pub registration_status: bool,
+}
+
+/// Custom planning event params data type
+///
+/// Used for registering or un-registering to custom planning events
+/// Used only for input
+#[derive(Deserialize)]
+pub struct CustomPlanningEventParams {
+    /// Custom planning ID
+    pub calendar_id: u64,
+
+    /// Event ID
+    pub event_id: u64,
 }

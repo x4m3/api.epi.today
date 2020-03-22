@@ -261,6 +261,8 @@ paths:
             type: "array"
             items:
               $ref: '#/definitions/CustomPlanningDay'
+        500:
+          description: "failed to get everyting correctly"
         503:
           description: "unable to get information (intra is probably down)"
         404:
