@@ -86,9 +86,40 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
         Err(_) => return HttpResponse::Ok().json(list),
     };
 
-    println!("{:?}", raw_json);
+    for event in &raw_json {
+        // Get the semester of the event
+        let semester_event = match event["semester"].as_u64() {
+            Some(semester_event) => semester_event,
+            None => {
+                return HttpResponse::InternalServerError().json(data::Default {
+                    msg: String::from("value `semester` does not exist"),
+                })
+            }
+        };
 
-    for event in &raw_json {}
+        // Rules to save event:
+        //
+        // User is a privileged account (aer, ape, adm) -> input.current_semester == 42
+        // Event does not fit in a semester (french, english, hub, etc) -> semester_event == 0
+        // Event belongs to previous semester -> semester_event == (input.current_semester - 1)
+        // Event belongs to current semester -> semester_event == input.current_semester
+        let save_event = input.current_semester == 42
+            || semester_event == 0
+            || semester_event == (input.current_semester - 1)
+            || semester_event == input.current_semester;
+
+        if save_event == false {
+            // Skip this event, move to the next one
+            continue;
+        }
+        println!("get it");
+
+        // Save info about event
+
+        // TODO: get additional information for rdv events
+    }
+
+    // TODO: get events from custom calendars and add them to list
 
     HttpResponse::Ok().json(list)
 }

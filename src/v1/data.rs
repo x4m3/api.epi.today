@@ -223,8 +223,18 @@ pub struct PlanningDayInput {
 /// Used only for output
 #[derive(Serialize)]
 pub struct PlanningDayResult {
-    /// Requested date
-    pub date: String,
+    //
+    // Fields below are details to events
+    //
+
+    // Is event a regular event
+    pub is_regular: bool,
+
+    // Is event a rdv
+    pub is_rdv: bool,
+
+    // Is event from a custom planning
+    pub is_custom: bool,
 
     // School year of event
     pub year: u64,
@@ -241,26 +251,24 @@ pub struct PlanningDayResult {
     // Code of event
     pub code_event: String,
 
-    // Is event a rdv
-    pub is_rdv: bool,
-
-    // Is event from a custom planning
-    pub is_custom: bool,
-
-    // Event title
-    pub title: String,
+    // Semester of event
+    pub semester: u64,
 
     // Module name
     pub module: String,
+
+    //
+    // Fields below are common to *all* events
+    //
+
+    // Event title
+    pub title: String,
 
     // Event location
     pub room: String,
 
     // Event teacher
     pub teacher: String,
-
-    // Semester of event
-    pub semester: u64,
 
     // Event start
     pub time_start: String,
