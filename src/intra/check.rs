@@ -22,8 +22,8 @@ pub fn yyyy_mm_dd(date: &str) -> Option<NaiveDateTime> {
     }
 }
 
-/// Internal check module
-mod check {
+/// Individual check module
+pub mod check {
     use regex::Regex;
 
     /// Check if module is syntactically correct

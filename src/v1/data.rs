@@ -215,6 +215,9 @@ pub struct PlanningDayInput {
 
     // User's current semester
     pub current_semester: u64,
+
+    // Student email address
+    pub email: String,
 }
 
 /// Planning day result data type

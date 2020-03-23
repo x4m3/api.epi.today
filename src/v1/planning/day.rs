@@ -38,6 +38,23 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
         }
     };
 
+    match check::check::email(&input.email) {
+        Some(res) => {
+            if res == true {
+                ()
+            } else {
+                return HttpResponse::BadRequest().json(data::Default {
+                    msg: String::from("field `email` is invalid"),
+                });
+            }
+        }
+        None => {
+            return HttpResponse::BadRequest().json(data::Default {
+                msg: String::from("field `email` failed to verify"),
+            });
+        }
+    }
+
     let client = match client::create_client() {
         Ok(client) => client,
         Err(_) => {
@@ -288,7 +305,7 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
             },
         };
 
-        if is_rdv == true {
+        if is_rdv == true && registration_status == true {
             // TODO: get additional information for rdv events
         }
 
