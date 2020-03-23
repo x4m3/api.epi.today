@@ -203,3 +203,71 @@ pub struct PlanningRdvResult {
     // Rdv end
     pub time_end: String,
 }
+
+/// Planning day input data type
+///
+/// Used for planning day
+/// Used only for input
+#[derive(Deserialize)]
+pub struct PlanningDayInput {
+    /// Requested date
+    pub date: String,
+
+    // User's current semester
+    pub current_semester: u64,
+}
+
+/// Planning day result data type
+///
+/// Used for planning day
+/// Used only for output
+#[derive(Serialize)]
+pub struct PlanningDayResult {
+    /// Requested date
+    pub date: String,
+
+    // School year of event
+    pub year: u64,
+
+    // Code of module
+    pub code_module: String,
+
+    // Code of module instance
+    pub code_instance: String,
+
+    // Code of activity
+    pub code_acti: String,
+
+    // Code of event
+    pub code_event: String,
+
+    // Is event a rdv
+    pub is_rdv: bool,
+
+    // Is event from a custom planning
+    pub is_custom: bool,
+
+    // Event title
+    pub title: String,
+
+    // Module name
+    pub module: String,
+
+    // Event location
+    pub room: String,
+
+    // Event teacher
+    pub teacher: String,
+
+    // Semester of event
+    pub semester: u64,
+
+    // Event start
+    pub time_start: String,
+
+    // Event end
+    pub time_end: String,
+
+    // Registration status of event
+    pub registration_status: bool,
+}

@@ -1,5 +1,6 @@
 use actix_web::web;
 
+mod day;
 mod event_register;
 mod event_unregister;
 mod rdv;
@@ -10,4 +11,5 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(event_unregister::event_unregister);
     cfg.service(token::token);
     cfg.service(rdv::rdv);
+    cfg.service(day::day);
 }
