@@ -225,16 +225,17 @@ pub struct PlanningDayInput {
 pub struct PlanningDayResult {
     //
     // Fields below are details to events
+    // Meant for making requests related to events
     //
 
-    // Is event a regular event
-    pub is_regular: bool,
+    // Is event from a custom planning
+    pub is_custom: bool,
 
     // Is event a rdv
     pub is_rdv: bool,
 
-    // Is event from a custom planning
-    pub is_custom: bool,
+    // Is event a regular event
+    pub is_regular: bool,
 
     // School year of event
     pub year: u64,
@@ -254,15 +255,16 @@ pub struct PlanningDayResult {
     // Semester of event
     pub semester: u64,
 
-    // Module name
-    pub module: String,
-
     //
     // Fields below are common to *all* events
+    // Meant to be displayed to the end user
     //
 
     // Event title
     pub title: String,
+
+    // Module name (or custom planning)
+    pub module: String,
 
     // Event location
     pub room: String,
