@@ -22,7 +22,6 @@ async fn main() -> std::io::Result<()> {
     // Starting logger
     env::set_var("RUST_LOG", "info");
     env_logger::init();
-    info!("hello world");
 
     env::set_var("HOST", "0.0.0.0");
     env::set_var("PORT", "4242");
