@@ -1,6 +1,5 @@
 use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder};
 use actix_web_prom::PrometheusMetrics;
-use dotenv::dotenv;
 use std::env;
 
 #[macro_use]
@@ -25,8 +24,8 @@ async fn main() -> std::io::Result<()> {
     env_logger::init();
     info!("hello world");
 
-    // Reading env file
-    dotenv().ok().expect("Failed to read .env file");
+    env::set_var("HOST", "0.0.0.0");
+    env::set_var("PORT", "4242");
     let host = env::var("HOST").expect("Host not set");
     let port = env::var("PORT").expect("Port not set");
 
