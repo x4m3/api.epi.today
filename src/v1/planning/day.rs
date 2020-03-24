@@ -108,11 +108,7 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
         // Get the semester of the event
         let semester_event = match event["semester"].as_u64() {
             Some(semester_event) => semester_event,
-            None => {
-                return HttpResponse::InternalServerError().json(data::Default {
-                    msg: String::from("value `semester` does not exist"),
-                })
-            }
+            None => continue, // <-- If an event doesn't have a semester, just skip it (fucking intra)
         };
 
         // Rules to save event:
