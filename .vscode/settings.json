@@ -11,6 +11,7 @@
         "codemodule",
         "concat",
         "datepicker",
+        "dotenv",
         "epitech",
         "nsstat",
         "reqwest",
