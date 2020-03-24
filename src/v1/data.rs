@@ -258,6 +258,12 @@ pub struct PlanningDayResult {
     // Semester of event
     pub semester: u64,
 
+    // ID of custom calendar
+    pub custom_calendar_id: u64,
+
+    // ID of event in custom calendar
+    pub custom_event_id: u64,
+
     //
     // Fields below are common to *all* events
     // Meant to be displayed to the end user

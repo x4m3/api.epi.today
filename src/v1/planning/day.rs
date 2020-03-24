@@ -134,6 +134,8 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
         // Store fields in temporary values
 
         let is_custom: bool = false;
+        let custom_calendar_id: u64 = 0;
+        let custom_event_id: u64 = 0;
 
         let is_rdv: bool = match event["is_rdv"].as_str() {
             Some(is_rdv) => {
@@ -384,6 +386,8 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
             code_acti: code_acti,
             code_event: code_event,
             semester: semester_event,
+            custom_calendar_id: custom_calendar_id,
+            custom_event_id: custom_event_id,
             title: title,
             module: module,
             room: room,

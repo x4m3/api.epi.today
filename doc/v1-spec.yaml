@@ -353,6 +353,9 @@ definitions:
         pattern: "^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$"
       current_semester:
         type: "integer"
+      email:
+        type: "string"
+        pattern: '^([A-Z0-9a-z.-]+@epitech.eu)$'
   PlanningDay:
     type: "object"
     properties:
@@ -370,6 +373,10 @@ definitions:
         type: "boolean"
       is_custom:
         type: "boolean"
+      custom_calendar_id:
+        type: "integer"
+      custom_event_id:
+        type: "integer"
       title:
         type: "string"
       module:
