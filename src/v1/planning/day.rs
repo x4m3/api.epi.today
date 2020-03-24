@@ -394,7 +394,134 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
         });
     }
 
-    // TODO: get list of custom calendars with their events and add them to list
+    //
+    // Custom plannings section
+    //
+
+    // Make request to own server (yes I know I should find a better way to do that)
+    let custom_planning_list_url = format!(
+        "http://{}:{}/v1/custom_planning/list",
+        env::var("HOST").expect("Host not set"),
+        env::var("PORT").expect("Port not set")
+    );
+
+    // Make get request with autologin in header
+    let res = match client
+        .get(&custom_planning_list_url)
+        .header("autologin", autologin)
+        .send()
+        .await
+    {
+        Ok(res) => res,
+        Err(_) => {
+            return HttpResponse::ServiceUnavailable().json(data::Default {
+                msg: String::from("client error"),
+            })
+        }
+    };
+
+    if res.status() != StatusCode::OK {
+        return HttpResponse::InternalServerError().json(data::Default {
+            msg: String::from("could not get custom_planning list"),
+        });
+    }
+
+    let raw_body = match res.text().await {
+        Ok(raw_body) => raw_body,
+        Err(_) => {
+            return HttpResponse::InternalServerError().json(data::Default {
+                msg: String::from("could not get intra response"),
+            })
+        }
+    };
+
+    let raw_json: Vec<data::CustomPlanningList> = match serde_json::from_str(&raw_body) {
+        Ok(raw_json) => raw_json,
+        Err(_) => {
+            return HttpResponse::InternalServerError().json(data::Default {
+                msg: String::from("failed to parse intra response in json"),
+            })
+        }
+    };
+
+    // For each custom planning
+    for custom_planning in &raw_json {
+        let custom_planning_get_events_req = data::CustomPlanningEventInput {
+            calendar_id: custom_planning.id,
+            date: input.date.clone(),
+        };
+
+        // Make request to own server (yes I know I should find a better way to do that)
+        let custom_planning_day_url = format!(
+            "http://{}:{}/v1/custom_planning/day",
+            env::var("HOST").expect("Host not set"),
+            env::var("PORT").expect("Port not set")
+        );
+
+        // Make get request with json and autologin in header
+        let res = match client
+            .get(&custom_planning_day_url)
+            .json(&custom_planning_get_events_req)
+            .header("autologin", autologin)
+            .send()
+            .await
+        {
+            Ok(res) => res,
+            Err(_) => {
+                return HttpResponse::ServiceUnavailable().json(data::Default {
+                    msg: String::from("client error"),
+                })
+            }
+        };
+
+        if res.status() != StatusCode::OK {
+            return HttpResponse::InternalServerError().json(data::Default {
+                msg: String::from("could not get custom_planning events"),
+            });
+        }
+
+        let raw_body = match res.text().await {
+            Ok(raw_body) => raw_body,
+            Err(_) => {
+                return HttpResponse::InternalServerError().json(data::Default {
+                    msg: String::from("could not get intra response"),
+                })
+            }
+        };
+
+        let raw_json: Vec<data::CustomPlanningEventResult> = match serde_json::from_str(&raw_body) {
+            Ok(raw_json) => raw_json,
+            Err(_) => {
+                return HttpResponse::InternalServerError().json(data::Default {
+                    msg: String::from("failed to parse intra response in json"),
+                })
+            }
+        };
+
+        for event in &raw_json {
+            // Push custom event into list
+            list.push(data::PlanningDayResult {
+                is_custom: true,
+                is_rdv: false,
+                is_regular: false,
+                year: 0,
+                code_module: String::new(),
+                code_instance: String::new(),
+                code_acti: String::new(),
+                code_event: String::new(),
+                semester: 0,
+                custom_calendar_id: event.calendar_id,
+                custom_event_id: event.event_id,
+                title: event.title.clone(),
+                module: custom_planning.name.clone(),
+                room: event.room.clone(),
+                teacher: event.teacher.clone(),
+                time_start: event.time_start.clone(),
+                time_end: event.time_end.clone(),
+                registration_status: event.registration_status,
+            });
+        }
+    }
 
     HttpResponse::Ok().json(list)
 }

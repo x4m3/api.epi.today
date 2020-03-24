@@ -44,7 +44,7 @@ pub struct User {
 ///
 /// Used for getting list of custom plannings
 /// Used only for outputs
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)] // Deserialize because it's used in `/planning/day`
 pub struct CustomPlanningList {
     /// Custom planning ID
     pub id: u64,
@@ -57,7 +57,7 @@ pub struct CustomPlanningList {
 ///
 /// Used for custom planning event
 /// Used only for input
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)] // Serialize because it's used in `/planning/day`
 pub struct CustomPlanningEventInput {
     /// Custom planning ID
     pub calendar_id: u64,
@@ -70,7 +70,7 @@ pub struct CustomPlanningEventInput {
 ///
 /// Used for custom planning events
 /// Used only for outputs
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)] // Deserialize because it's used in `/planning/day`
 pub struct CustomPlanningEventResult {
     /// Custom planning ID
     pub calendar_id: u64,
@@ -272,7 +272,7 @@ pub struct PlanningDayResult {
     // Event title
     pub title: String,
 
-    // Module name (or custom planning)
+    // Module name (or custom planning name)
     pub module: String,
 
     // Event location
