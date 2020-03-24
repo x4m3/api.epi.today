@@ -170,7 +170,7 @@ pub struct PlanningSubmitTokenParams {
 ///
 /// Used for getting information about rdv
 /// Used only for input
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)] // Serialize because it's used in `/planning/day`
 pub struct PlanningRdvParams {
     // School year of event
     pub year: u64,
@@ -192,7 +192,7 @@ pub struct PlanningRdvParams {
 ///
 /// Used for getting information about rdv
 /// Used only for output
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)] // Deserialize because it's used in `/planning/day`
 pub struct PlanningRdvResult {
     // Rdv title
     pub title: String,

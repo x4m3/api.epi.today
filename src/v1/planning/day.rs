@@ -2,6 +2,7 @@ use crate::intra::{autologin, check, client, format};
 use crate::v1::data;
 use actix_web::{get, http::StatusCode, web, HttpRequest, HttpResponse, Responder};
 use serde_json::Value;
+use std::env;
 
 #[get("/day")]
 pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> impl Responder {
@@ -209,7 +210,8 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
             false => String::new(),
         };
 
-        let title: String = match event["acti_title"].as_str() {
+        // `title` is mutable because event might be a rdv
+        let mut title: String = match event["acti_title"].as_str() {
             Some(acti_title) => String::from(acti_title),
             None => {
                 return HttpResponse::InternalServerError().json(data::Default {
@@ -247,7 +249,8 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
             },
         };
 
-        let time_start: String = match event["start"].as_str() {
+        // `time_start` is mutable because event might be a rdv
+        let mut time_start: String = match event["start"].as_str() {
             Some(start) => match format::time(&start) {
                 Some(start) => start,
                 None => {
@@ -263,7 +266,8 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
             }
         };
 
-        let time_end: String = match event["end"].as_str() {
+        // `time_end` is mutable because event might be a rdv
+        let mut time_end: String = match event["end"].as_str() {
             Some(end) => match format::time(&end) {
                 Some(end) => end,
                 None => {
@@ -305,8 +309,68 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
             },
         };
 
+        // If event is a rdv and user is registered
         if is_rdv == true && registration_status == true {
-            // TODO: get additional information for rdv events
+            // Get additional information for rdv events
+            let rdv_info = data::PlanningRdvParams {
+                year: year,
+                code_module: code_module.clone(),
+                code_instance: code_instance.clone(),
+                code_acti: code_acti.clone(),
+                email: input.email.clone(),
+            };
+
+            // Make request to own server (yes I know I should find a better way to do that)
+            let rdv_url = format!(
+                "http://{}:{}/v1/planning/rdv",
+                env::var("HOST").expect("Host not set"),
+                env::var("PORT").expect("Port not set")
+            );
+
+            // Make get request with json and autologin in header
+            let res = match client
+                .get(&rdv_url)
+                .json(&rdv_info)
+                .header("autologin", autologin)
+                .send()
+                .await
+            {
+                Ok(res) => res,
+                Err(_) => {
+                    return HttpResponse::ServiceUnavailable().json(data::Default {
+                        msg: String::from("client error"),
+                    })
+                }
+            };
+
+            if res.status() != StatusCode::OK {
+                return HttpResponse::InternalServerError().json(data::Default {
+                    msg: String::from("could not get rdv information"),
+                });
+            }
+
+            let raw_body = match res.text().await {
+                Ok(raw_body) => raw_body,
+                Err(_) => {
+                    return HttpResponse::InternalServerError().json(data::Default {
+                        msg: String::from("could not get intra response"),
+                    })
+                }
+            };
+
+            let raw_json: data::PlanningRdvResult = match serde_json::from_str(&raw_body) {
+                Ok(raw_json) => raw_json,
+                Err(_) => {
+                    return HttpResponse::InternalServerError().json(data::Default {
+                        msg: String::from("failed to parse intra response in json"),
+                    })
+                }
+            };
+
+            // Store results
+            title = raw_json.title;
+            time_start = raw_json.time_start;
+            time_end = raw_json.time_end;
         }
 
         // Push event into list
