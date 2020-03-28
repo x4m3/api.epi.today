@@ -8,7 +8,7 @@ ADD --chown=rust:rust Cargo.toml ./
 ADD --chown=rust:rust doc/doc.html ./doc/
 ADD --chown=rust:rust src/ ./src/
 
-RUN cargo build --release
+RUN cargo build --release --color never
 
 # final stage
 FROM alpine:latest

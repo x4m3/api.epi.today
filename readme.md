@@ -18,6 +18,6 @@ The default listening port is `4242`.
 
 use docker
 
-start application in container as daemon `docker run -d --restart unless-stopped --name api-epi-today -p 8005:4242 api-epi-today`. The container will automatically start when docker starts.
+start application in container as daemon `docker run -d --restart unless-stopped --name api-epi-today -p 80:4242 x4m3/api-epi-today`. The container will automatically start when docker starts.
 
 stop application `docker stop api-epi-today`
