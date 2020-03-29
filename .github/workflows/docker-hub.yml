@@ -13,16 +13,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Login to Docker Hub
     - run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
     - name: Get the version
       id: vars
       run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
+
     - name: Build the tagged Docker image
       run: docker build . --file Dockerfile --tag x4m3/api.epi.today:${{steps.vars.outputs.tag}}
+
     - name: Push the tagged Docker image
       run: docker push x4m3/api.epi.today:${{steps.vars.outputs.tag}}
+
     - name: Build the latest Docker image
       run: docker build . --file Dockerfile --tag x4m3/api.epi.today:latest
+
     - name: Push the latest Docker image
       run: docker push x4m3/api.epi.today:latest
