@@ -15,7 +15,7 @@ You can run the debug version of the project with `cargo run`.
 
 The listening port is `4242`.
 
-⚠ Warning: The server listens on **http** only, which means that **zero bytes** will be encrypted!  
+⚠️ Warning: The server listens on **http** only, which means that **zero bytes** will be encrypted!  
 There is confidential data that will be transferred between the client and the server, please keep security in mind when deploying.
 
 ## deployment
