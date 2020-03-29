@@ -1,0 +1,29 @@
+name: Docker Hub tagged
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: azure/docker-login@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    - name: Get the version
+      id: vars
+      run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
+
+    - name: Build the tagged Docker image
+      run: docker build . --file Dockerfile --tag x4m3/api.epi.today:${{steps.vars.outputs.tag}}
+
+    - name: Push the tagged Docker image
+      run: docker push x4m3/api.epi.today:${{steps.vars.outputs.tag}}
