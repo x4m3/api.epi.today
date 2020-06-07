@@ -57,7 +57,7 @@ pub fn room(raw_room: &str) -> Option<String> {
 pub fn time(raw_date_time: &str) -> Option<String> {
     match NaiveDateTime::parse_from_str(&raw_date_time, "%Y-%m-%d %H:%M:%S") {
         Ok(date_time) => Some(date_time.format("%H:%M").to_string()),
-        Err(_) => return None,
+        Err(_) => None,
     }
 }
 
@@ -76,8 +76,8 @@ pub fn rdv_time_start(raw_object: &Value) -> Option<String> {
 
     // Try to extract time
     match time(raw_date) {
-        Some(start) => return Some(start),
-        None => return None,
+        Some(start) => Some(start),
+        None => None,
     }
 }
 

@@ -95,21 +95,21 @@ pub async fn event_register(
         Some(error) => {
             if error == "You cannot register for a past activity" {
                 // past event
-                return HttpResponse::BadRequest().json(data::Default {
+                HttpResponse::BadRequest().json(data::Default {
                     msg: String::from("past event"),
-                });
+                })
             } else {
                 // already registered
-                return HttpResponse::InternalServerError().json(data::Default {
+                HttpResponse::InternalServerError().json(data::Default {
                     msg: String::from("already registered"),
-                });
+                })
             }
         }
         None => {
             // generic error
-            return HttpResponse::InternalServerError().json(data::Default {
+            HttpResponse::InternalServerError().json(data::Default {
                 msg: String::from("could not register"),
-            });
+            })
         }
     }
 }

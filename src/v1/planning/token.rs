@@ -13,7 +13,7 @@ pub async fn token(
         _ => {
             return HttpResponse::BadRequest().json(data::Default {
                 msg: String::from("no autologin provided"),
-            })
+            });
         }
     };
 
@@ -94,15 +94,15 @@ pub async fn token(
     match raw_json["error"].as_str() {
         Some(error) => {
             // return error from intra
-            return HttpResponse::InternalServerError().json(data::Default {
+            HttpResponse::InternalServerError().json(data::Default {
                 msg: String::from(error),
-            });
+            })
         }
         None => {
             // if object "error" is not there, token has been registered
-            return HttpResponse::Ok().json(data::Default {
+            HttpResponse::Ok().json(data::Default {
                 msg: String::from("token registered"),
-            });
+            })
         }
-    };
+    }
 }

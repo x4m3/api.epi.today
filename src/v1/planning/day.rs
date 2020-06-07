@@ -42,7 +42,6 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
     match check::check::email(&input.email) {
         Some(res) => {
             if res == true {
-                ()
             } else {
                 return HttpResponse::BadRequest().json(data::Default {
                     msg: String::from("field `email` is invalid"),
@@ -311,7 +310,7 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
         if is_rdv == true && registration_status == true {
             // Get additional information for rdv events
             let rdv_info = data::PlanningRdvParams {
-                year: year,
+                year,
                 code_module: code_module.clone(),
                 code_instance: code_instance.clone(),
                 code_acti: code_acti.clone(),
@@ -373,24 +372,24 @@ pub async fn day(req: HttpRequest, input: web::Json<data::PlanningDayInput>) -> 
 
         // Push event into list
         list.push(data::PlanningDayResult {
-            is_custom: is_custom,
-            is_rdv: is_rdv,
-            is_regular: is_regular,
-            year: year,
-            code_module: code_module,
-            code_instance: code_instance,
-            code_acti: code_acti,
-            code_event: code_event,
+            is_custom,
+            is_rdv,
+            is_regular,
+            year,
+            code_module,
+            code_instance,
+            code_acti,
+            code_event,
             semester: semester_event,
-            custom_calendar_id: custom_calendar_id,
-            custom_event_id: custom_event_id,
-            title: title,
-            module: module,
-            room: room,
-            teacher: teacher,
-            time_start: time_start,
-            time_end: time_end,
-            registration_status: registration_status,
+            custom_calendar_id,
+            custom_event_id,
+            title,
+            module,
+            room,
+            teacher,
+            time_start,
+            time_end,
+            registration_status,
         });
     }
 

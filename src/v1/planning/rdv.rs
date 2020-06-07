@@ -202,8 +202,8 @@ pub async fn rdv(req: HttpRequest, input: web::Json<data::PlanningRdvParams>) ->
 
     let rdv = data::PlanningRdvResult {
         title: rdv_title,
-        time_start: time_start,
-        time_end: time_end,
+        time_start,
+        time_end,
     };
 
     HttpResponse::Ok().json(rdv)

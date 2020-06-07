@@ -28,15 +28,15 @@ async fn intra() -> impl Responder {
         StatusCode::FORBIDDEN => {
             // if intra return 403, that means that intra works
             // (403 because we don't have permission to get data)
-            return HttpResponse::Ok().json(data::Default {
+            HttpResponse::Ok().json(data::Default {
                 msg: String::from("okay"),
-            });
+            })
         }
         _ => {
             // otherwise, the intra is (probably) down
-            return HttpResponse::InternalServerError().json(data::Default {
+            HttpResponse::InternalServerError().json(data::Default {
                 msg: String::from("down"),
-            });
+            })
         }
     }
 }

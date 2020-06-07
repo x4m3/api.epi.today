@@ -95,21 +95,21 @@ pub async fn event_unregister(
         Some(error) => {
             if error == "You cannot unregister from a past activity" {
                 // past event
-                return HttpResponse::BadRequest().json(data::Default {
+                HttpResponse::BadRequest().json(data::Default {
                     msg: String::from("past event"),
-                });
+                })
             } else {
                 // not registered
-                return HttpResponse::InternalServerError().json(data::Default {
+                HttpResponse::InternalServerError().json(data::Default {
                     msg: String::from("not registered"),
-                });
+                })
             }
         }
         None => {
             // generic error
-            return HttpResponse::InternalServerError().json(data::Default {
+            HttpResponse::InternalServerError().json(data::Default {
                 msg: String::from("could not register"),
-            });
+            })
         }
     }
 }

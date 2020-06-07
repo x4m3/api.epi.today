@@ -1,5 +1,4 @@
 use crate::v1::data;
-use reqwest;
 use std::time::Duration;
 
 /// Returns a client ready to be used for making requests to the intra

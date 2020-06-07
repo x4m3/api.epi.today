@@ -18,7 +18,7 @@ pub fn yyyy_mm_dd(date: &str) -> Option<NaiveDateTime> {
 
     match NaiveDateTime::parse_from_str(&full_date, "%Y-%m-%d %H:%M:%S") {
         Ok(res) => Some(res),
-        Err(_) => return None,
+        Err(_) => None,
     }
 }
 
@@ -80,7 +80,6 @@ pub fn planning_event(module: &str, instance: &str, activity: &str, event: &str)
             if res == false {
                 return Some(String::from("field `module` is invalid"));
             } else {
-                ()
             }
         }
         None => return Some(String::from("field `module` is invalid")),
@@ -91,7 +90,6 @@ pub fn planning_event(module: &str, instance: &str, activity: &str, event: &str)
             if res == false {
                 return Some(String::from("field `instance` is invalid"));
             } else {
-                ()
             }
         }
         None => return Some(String::from("field `instance` is invalid")),
@@ -102,7 +100,6 @@ pub fn planning_event(module: &str, instance: &str, activity: &str, event: &str)
             if res == false {
                 return Some(String::from("field `activity` is invalid"));
             } else {
-                ()
             }
         }
         None => return Some(String::from("field `activity` is invalid")),
@@ -113,7 +110,6 @@ pub fn planning_event(module: &str, instance: &str, activity: &str, event: &str)
             if res == false {
                 return Some(String::from("field `event` is invalid"));
             } else {
-                ()
             }
         }
         None => return Some(String::from("field `event` is invalid")),
@@ -131,7 +127,6 @@ pub fn planning_rdv(module: &str, instance: &str, activity: &str, email: &str) -
             if res == false {
                 return Some(String::from("field `module` is invalid"));
             } else {
-                ()
             }
         }
         None => return Some(String::from("field `module` is invalid")),
@@ -142,7 +137,6 @@ pub fn planning_rdv(module: &str, instance: &str, activity: &str, email: &str) -
             if res == false {
                 return Some(String::from("field `instance` is invalid"));
             } else {
-                ()
             }
         }
         None => return Some(String::from("field `instance` is invalid")),
@@ -153,7 +147,6 @@ pub fn planning_rdv(module: &str, instance: &str, activity: &str, email: &str) -
             if res == false {
                 return Some(String::from("field `activity` is invalid"));
             } else {
-                ()
             }
         }
         None => return Some(String::from("field `activity` is invalid")),
@@ -164,7 +157,6 @@ pub fn planning_rdv(module: &str, instance: &str, activity: &str, email: &str) -
             if res == false {
                 return Some(String::from("field `email` is invalid"));
             } else {
-                ()
             }
         }
         None => return Some(String::from("field `email` is invalid")),
